@@ -1,0 +1,33 @@
+1
+1000.0	1000.0	1000.0	0.0	5.0	1.0	1.0	0.0
+#
+# Parameters for each source node (one source node per line):
+#
+# Definition of (distributed) source positions:
+# number of lines in source file NSRC (first line)
+# position XSRC, position ZSRC, time-delay TD, centre frequency FC, amplitude AMP, source type ST and number of samples NS 
+# (comment line is indicated by # as first character)
+#
+# Symbols:
+# Parameters for each source node (one source node per line):
+# X  = x-coordinate of source point [m]
+# Y  = y-coordinate of source point [m]
+# Z  = z-coordinate of source point [m]
+# TD = excitation time (time-delay) for source node [s]
+# FC = centre frequency of source signal [Hz]
+# AMP= maximum amplitude of source signal
+# ST = source type: ST=1 ... explosion source (energy/time [J/s])
+#                   ST=2 ... acceleration in x-direction (acceleration*volume [m4/s2])
+#                   ST=3 ... acceleration in y-direction (acceleration*volume [m4/s2])
+#                   ST=4 ... acceleration in z-direction (acceleration*volume [m4/s2])
+#                   ST=5 ... force in x-direction (force [kg*m/s2])
+#                   ST=6 ... force in y-direction (force [kg*m/s2])
+#                   ST=7 ... force in z-direction (force [kg*m/s2])
+#                   ST=8 ... double couple x-y-plane (energy/time [J/s])
+#                   ST=9 ... double couple y-z-plane (energy/time [J/s])
+#                   ST=10... double couple x-z-plane (energy/time [J/s])
+# NS = number of samples in source signal file
+#      corresponding to source defined in that
+#      line; if NS=0, the whole content of the
+#      source signal file is taken as source signal
+#      (applies only if source signal is read from ASCII- or BIN-file)

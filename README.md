@@ -1,5 +1,5 @@
 # SAVA
-3D seismic finite-difference modelling, Full Waveform Inversion (FWI) and reverse Time Migration (RTM) code for wave propagation in isotropic (visco)-acoustic/elastic and anisotropic orthorhombic/triclinic elastic media, which I developed together with Olaf Hellwig and Denise De Nil.
+3D seismic finite-difference modelling, Full Waveform Inversion (FWI) and Reverse Time Migration (RTM) code for wave propagation in isotropic (visco)-acoustic/elastic and anisotropic orthorhombic/triclinic elastic media, which I developed together with Olaf Hellwig and Denise De Nil.
 
 The forward modelling code is based on fd3d by Olaf Hellwig.
 

@@ -1,0 +1,115 @@
+Program FD3D - Finite difference 3D (visco-)elastic modeling
+
+1) program structure
+
+directory ./bin/
+  ... contains executables
+directory ./src/
+  ... contains source code and Makefile
+directory ./par/
+  ... contains shell scripts for compiling and executing the program, subdirectories for input files, model files, modeled data
+
+
+fd3d_p.job     
+  ... sh-script to compile and execute the simulation program (acoustic version)
+fd3d_ps.job     
+  ... sh-script to compile and execute the simulation program (elastic version)
+nodelist.dat 
+  ... file to define nodes to use for parallel computation
+
+
+subdirectory ./par/model/
+  ... contains input files "fd3dp.inp" / "fd3dps.inp",
+      source file "source_p.dat" / "source_ps.dat",
+      receiver file "receiver_p.dat" / "receiver_ps.dat",
+      file for defining spatial FD grid "dx.dat", "dy.dat", "dz.dat", 
+      two examples of user defined source wavelets "signal.bin" (binary) and "signal.asc" (ASCII) and
+      an examples of a model file "model_p.c" / "model_ps.c"  
+subdirectory ./par/log/
+  ... used to write log-files during execution of program
+subdirectory ./par/su/
+  ... used to write seismograms
+subdirectory ./par/snap/
+  ... used to write snapshots of the wavefield
+subdirectory ./par/matlab/
+  ... contains matlab-script "snap_fd3d_vargrid_model.m" to display snapshots
+
+
+2) Preparing a simulation
+- edit input file "fd3dp.inp", "fd3dps.inp"
+  define number of processors in x-, y- and z-direction (the total number of processors is NPROCX*NPROCY*NPROCZ)
+  define number of grid cells in x-, y- and z-direction (NX/NPROCX, NY/NPROCY and NZ/NPROCZ have to be intergers)
+  define grid spacings in external file (here: "dx.dat", "dy.dat" and "dz.dat")
+      300   0.02
+      100   0.04
+      600   0.02
+    means 300 grid cells with 0.02 m grid spacing followed by 100 grid cells with 0.04 m grid spacing and so on.
+    If there are more grid cells than specified in the file the missing ones are filled with the value of the last grid cell.
+    If there are less grid cells than specified in the file the remaining ones are ignored.
+    Each line in the file has to be followed by a line break!
+    To avoid grid dispersion the maximum grid spacing should be on the order of 1/20-1/10 of the minimum wavelength in the model.
+  define reference point for coordinate system
+    point (x,y,z) defines coordinate of the first grid point in the front upper left corner (REFMOD) for the model grid
+  define time stepping (simulation time TIME and time stepping DT)
+    The Courant-Friedrichs-Lewy-criterion gives an upper limit for DT in order to ensure stability.
+    DT < min(DX,DY,DZ)/(max(v)*sqrt(3))  
+  define sources
+    It is possible to define a reference point (x,y,z) for the source coordinates.
+    select source signal (e.g. Ricker or read wavelet from SIGNAL_FILE)
+    define source position, frequency, etc. in SOURCE_FILE (e.g. "source_p.dat"), follow the instructions in the source file
+  define model
+    Models for vP, vS and density can be read from binary or Seismic Unix (SU) files that contain all values as binary float values 
+    (z-direction as inner loop, followed by y-direction and x-direction as outer loops) or
+    generate model within the source code in the file "model_p.c" / "model_ps.c". Examples are given in the model directory. 
+    Layer boundaries can be defined using if-then-else-statements within the loops over the FD grid. "x[i]", y[j] and "z[k]" describe 
+    the x-, y- and z-coordinates. Before compilation, this file has to be copied into the /src/-directory.
+  define vico-elastic parameters
+    L=0 for elastic modeling
+    L>0 viscoelastic modeling (see FDVEPS by T. Bohlen, only 1 relaxation mechanism is implemented)
+  define boundary conditions
+    non-periodic or periodic boundary combined with free surface, PML or absorbing frame
+    PMLs show better performance than absorbing frames but can become instable if their parameters are not set correctly
+    rule of thumb for SIGMA: SIGMA = (N_SIGMA+1)/2*vP*ln(1/R) with vP ... P-wave velovity and R ... reflection coefficient of PML (R approx. 1e-5 is sufficient)
+    KAPPA: KAPPA>=1, KAPPA>1 delays waves reflected at the boundary. If instabilities are observed that originate from the PML boundary, KAPPA should be 
+    increased to delay the instability.
+  define output of snapshots
+    select wavefield components for output
+    define dimension and resolution of snapshots
+    Remember that the snapshot files can grow considerably with a fine sampling in time and space! 
+  define output of seismograms
+    read receiver coordinates from REC_FILE (e.g. "receiver_p.dat")
+    "receiver_p.dat" / "receiver_ps.dat" contains three columns with receiver coordinates, x ... first column, y ... second column, z ... third column. 
+    Each line in the file has to be followed by a line break!
+    It is possible to define a reference point (x,y,z) for the receiver coordinates.
+    If READREC=0, receiver positions are computed from XREC1, YREC1, ZREC1, XREC2, YREC2, ZREC2, DXREC, DYREC and DZREC. 
+    (XREC1,YREC1,ZREC1) and (XREC2,YREC2,ZREC2) define two corners of a rectangle where receivers are placed every XREC / DZREC gridpoints.
+    select wavefield components for output
+    define sampling rate for seismograms NDT (in multiples of time steps DT)
+  define log-file output
+
+3) Compilation
+- copy the model file "model_p.c" / "model_ps.c" into the /src/-directory if the model is generated within the source code
+- change to the /src/-directory
+- edit Makefile if necessary (change compilers, etc.)
+- clear old object files *.o (command "make clean")
+- compile (command "make fd3dp" / "make fd3dps") 
+    We use "mpicc" as compiler. OpenMPI or another version of MPI should be installed. An accordant compiler and compiler flags 
+    have to be specified  in the "Makefile".
+- If the compilation is successful, an executable file "fd3dp.exe" / "fd3dps.exe" is created in the /bin/-directory.
+- change to the /par/-directory
+
+4) Execution of FD3D
+- start simulation from the /par/-directory e.g. with 
+    "mpirun -np 20 -machinefile nodelist.dat ../bin/fd3dp.exe ./model/fd3dp.inp"
+    The number of processors (here 20) must be equal to the number of processors specified in the input file. "nodelist.dat" specifies the nodes with the CPUs to 
+    use for the simulation. Depending on the MPI-version, the command to start the simulation might be different. 
+
+The sh-scripts "fd3d_p.job" / "fd3d_ps.job" in the /par/-directory summarize all steps for compilation and execution of the program. 
+The examples as they are now consists of a relatively small model with a layer and a halfspace with an inclusion.
+
+- All processors write log-files that might help to identify problems or wrong parameter settings.
+
+5) Display results
+- seismograms: "./su/seismergep.sh" and "./su/seismergeps.sh" are sh-scripts to merge the output seismograms of all processors.
+- snapshots: ./par/matlab/snap_fd3d_vargrid_model.m is a matlab-script to display the snapshots. It reads all necessary information from the 
+    input files and related files.

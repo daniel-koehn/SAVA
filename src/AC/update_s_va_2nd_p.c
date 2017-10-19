@@ -1,0 +1,84 @@
+/*------------------------------------------------------------------------
+ *   updating stress tensor components
+ *   by a staggered grid finite difference scheme of 2nd order accuracy in space
+ *   and second order accuracy in time
+ *   (viscoelastic version using one relaxation mechanism) 
+ *
+ *   O. Hellwig
+ *  ----------------------------------------------------------------------*/
+
+#include "fd.h"
+
+double update_s_va(int nx1, int nx2, int ny1, int ny2, int nz1, int nz2,
+	struct vector3d ***v, float ***p, float ***rpp, float ***div,
+	float	***pi, float	***taup, float *eta, float ***absorb_coeff, 
+	float	*dx, float *dy, float *dz, int infoout){
+
+	/* local variables */
+	int	i, j, k;
+	float	divv, b, c, d, g;
+	double	time=0, time1=0, time2=0;
+
+	/* extern variables */
+	extern int	AB;
+	extern int	OUT_DIV_CURL;
+	extern FILE	*FP;
+
+
+	/* timing */
+	time1 = MPI_Wtime();
+
+
+	c = (2.0-eta[1])/(2.0+eta[1]);
+	g = c-1.0;
+
+	for (i=nx1;i<=nx2;i++){
+		for (j=ny1;j<=ny2;j++){
+			for (k=nz1;k<=nz2;k++){
+
+				/* compute derivatives and divergence */
+				divv  = (v[i+1][j][k].x-v[i][j][k].x)*dx[i];
+				divv += (v[i][j+1][k].y-v[i][j][k].y)*dy[j];
+				divv += (v[i][j][k+1].z-v[i][j][k].z)*dz[k];
+
+				d = (pi[i][j][k]*(1.0+taup[i][j][k]))*divv;
+
+				/* update pressure (p) */
+				p[i][j][k] -= (d + 0.5*rpp[i][j][k]);
+
+				/* update div */
+				if (OUT_DIV_CURL){
+					div[i][j][k] = divv;
+				}
+
+				/* update memory variables */
+				b = (pi[i][j][k]*taup[i][j][k])*divv;
+				rpp[i][j][k] *= c;
+				rpp[i][j][k] += (g*b);
+
+				/* add updated memory variable to pressure */
+				p[i][j][k] -= 0.5*rpp[i][j][k];
+			}
+		}
+	}
+
+	/* absorbing frame */
+	if (AB){
+		for (i=nx1;i<=nx2;i++){
+			for (j=ny1;j<=ny2;j++){
+				for (k=nz1;k<=nz2;k++){
+					p[i][j][k] *= absorb_coeff[i][j][k];
+				}
+			}
+		}
+	}
+
+	/* timing */
+	time2 = MPI_Wtime();
+	time  = time2-time1;
+	if (infoout)
+		fprintf(FP," Real time for stress update (viscoelastic): \t %4.2f s.\n",time);
+
+	return time;
+}
+

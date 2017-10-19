@@ -1,0 +1,22 @@
+#!/bin/bash
+#PBS -l elapstim_req=1:00:00   # Walltime
+#PBS -l cputim_job=32:00:00    # akkumulierte CPU-Zeit pro Knoten
+#PBS -l memsz_job=100gb        # Hauptspeicherbedarf
+#PBS -b 2                      # Anzahl der Knoten
+#PBS -T intmpi                 # gibt Jobtyp an; intmpi fuer Intel-MPI 
+#PBS -l cpunum_job=32          # Anzahl benoetigter CPUs pro Knoten 
+#PBS -N SAVA                   # Name des Batch-Jobs
+#PBS -o SAVA.out               # Datei fuer die Standardausgabe
+#PBS -j o                      # Standard- und Fehlerausgabe in eine Datei 
+#PBS -q clmedium               # Batch-Klasse
+
+# Initialisierung der Intel-Umgebung
+module load intel17.0.4 intelmpi17.0.4
+
+# Starte SAVA
+cd $WORK/SAVA/par
+mpirun $NQSII_MPIOPTS -np 64 ../bin/sava_TRICL SAVA_tricl.inp > SAVA1.out
+
+# Ausgabe der verbrauchten Ressourcen (Rechenzeit, Hauptspeicher) nach Jobende
+/usr/bin/nqsII/qstat -f ${PBS_JOBID/0:}
+
