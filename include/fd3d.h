@@ -26,11 +26,11 @@ void merge(int nsnap, int type, float *x, float *y, float *z);
 
 void mergemod(char modfile[STRING_SIZE], int format);
 
-void  output_source_signal(FILE *fp, float **signals, float **srcpos_loc, int nsrc_loc, int ns, int seis_form, 
+void  output_source_signal(FILE *fp, float **signals, float **srcpos_loc, int ns, int seis_form, 
 float *xg, float *yg, float *zg, float *xpg, float *ypg, float *zpg);
 
 void  outseis(FILE *fp, FILE *fpdata, float **section,
-int **recpos, int **recpos_loc, int ntr, float ** srcpos_loc,
+int **recpos, int **recpos_loc, float ** srcpos_loc,
 int nsrc, int ns, int seis_form, float *x, float *y, float *z);
 
 void pml_profile(struct pml *pmlle, struct pml *pmlri, struct pml *pmlba, struct pml *pmlfr, struct pml *pmlto, struct pml *pmlbo,
@@ -42,12 +42,12 @@ void read_par(FILE *fp_in);
 
 float **read_wavelet(float **srcpos_loc, int nsrc_loc, int *nsamp_max);
 
-int **receiver(FILE *fp, int *ntr, float *xg, float *yg, float *zg, float *xpg, float *ypg, float *zpg);
+int **receiver(FILE *fp, float *xg, float *yg, float *zg, float *xpg, float *ypg, float *zpg);
 
-int **splitrec(int *ntr_loc, int **recpos, int ntr, int *recswitch);
+int **splitrec(int **recpos, int *recswitch);
 
-float **splitsrc(int *nsrc_loc, float **srcpos, int nsrc);
+float **splitsrc(float **srcpos);
 
-float ** wavelet(float ** srcpos_loc, int nsrc_loc);
+float ** wavelet(float ** srcpos_loc);
 
 void writemod(char modfile[STRING_SIZE], float *** array, int format);

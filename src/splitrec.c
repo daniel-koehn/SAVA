@@ -6,10 +6,10 @@
  *  ----------------------------------------------------------------------*/
  
  #include "fd.h"
-int **splitrec(int *ntr_loc, int **recpos, int ntr, int *recswitch){
+int **splitrec(int **recpos, int *recswitch){
 
 	/* extern variables */
-	extern int	NX[3], POS[3], MYID;
+	extern int	NX[3], POS[3], MYID, NTR, NTR_LOC;
 	extern FILE	*FP;
 
 	/* local variables */
@@ -19,10 +19,10 @@ int **splitrec(int *ntr_loc, int **recpos, int ntr, int *recswitch){
 
 
 	fprintf(FP,"\n **Message from splitrec (printed by PE %d):\n",MYID);
-	recpos_dummy = ivector(1,ntr);
+	recpos_dummy = ivector(1,NTR);
 
 	i = 0;
-	for (j=1;j<=ntr;j++){
+	for (j=1;j<=NTR;j++){
 		recswitch[j] = 0;
 		a = (recpos[j][1]-1)/NX[0];
 		b = (recpos[j][2]-1)/NX[1];
@@ -49,7 +49,7 @@ int **splitrec(int *ntr_loc, int **recpos, int ntr, int *recswitch){
 		recpos_local[k][7] =   recpos[j][7];
 	}
 
-	free_ivector(recpos_dummy,1,ntr);
+	free_ivector(recpos_dummy,1,NTR);
 
 	fprintf(FP," Splitting of receivers from global to local grids finished.\n");
 	fprintf(FP," Number of local receiver positions: %d \n",i);
@@ -61,7 +61,7 @@ int **splitrec(int *ntr_loc, int **recpos, int ntr, int *recswitch){
 		fprintf(FP," %d \t %d \t %d \t %d \t %d \t %d \t %d\n",MYID,recpos_local[j][1],recpos_local[j][2],recpos_local[j][3],recpos_local[j][4],recpos_local[j][5],recpos_local[j][6]);
 	fprintf(FP,"\n");
 
-	*ntr_loc = i;
+	NTR_LOC = i;
 
 	return recpos_local;
 

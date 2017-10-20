@@ -73,10 +73,14 @@ extern const int	TAG7,  TAG8,  TAG9,  TAG10, TAG11, TAG12;
 extern const int	TAG13, TAG14, TAG15, TAG16, TAG17, TAG18;
 extern MPI_Comm		COMM_CART;
 
+/* Acquisition geometry */
+extern int 		NTR, NTR_LOC, NSRC, NSRC_LOC;
+NTR = 0, NTR_LOC = 0, NSRC = 0, NSRC_LOC = 0;
+
+
 /* variables in FD_ISO */
 int	ns, nseismograms=0, ndyn, nt, infoout;
 int	lsnap, nsnap=0, lsamp=0;
-int	ntr=0, ntr_loc=0, nsrc=0, nsrc_loc=0;
 
 float	memdyn, memmodel, memsrc, memseismograms, membuffer, mempml, memtotal;
 float	fac1, fac2, fac3;
@@ -174,16 +178,16 @@ read_grid(FP,DY_FILE,1,geom.y,geom.yp,geom.yg,geom.ypg);
 read_grid(FP,DZ_FILE,2,geom.z,geom.zp,geom.zg,geom.zpg);
 
 /* read source positions and source parameters from SOURCE_FILE and assign positions to local grids */
-acq.srcpos     = sources(&nsrc, geom.xg, geom.yg, geom.zg, geom.xpg, geom.ypg, geom.zpg);
-acq.srcpos_loc = splitsrc(&nsrc_loc, acq.srcpos, nsrc);
+acq.srcpos     = sources(geom.xg, geom.yg, geom.zg, geom.xpg, geom.ypg, geom.zpg);
+acq.srcpos_loc = splitsrc(acq.srcpos);
 
 
 /* read receiver positions and assign positions to local grids */
 if (SEISMO){
-	acq.recpos      = receiver(FP, &ntr, geom.xg, geom.yg, geom.zg, geom.xpg, geom.ypg, geom.zpg);
-        acq.recswitch = ivector(1,ntr);
-	acq.recpos_loc  = splitrec(&ntr_loc, acq.recpos, ntr, acq.recswitch);
-        seis.section_fulldata = matrix(1,ntr,1,ns);
+	acq.recpos      = receiver(FP, geom.xg, geom.yg, geom.zg, geom.xpg, geom.ypg, geom.zpg);
+        acq.recswitch = ivector(1,NTR);
+	acq.recpos_loc  = splitrec(acq.recpos, acq.recswitch);
+        seis.section_fulldata = matrix(1,NTR,1,ns);
 }
 
 
@@ -246,8 +250,8 @@ fac3 = sizeof(float)*fac2;
 
 memdyn         = (float)(ndyn*fac1)*fac3;							/* dynamic arrays */
 memmodel       = (float)((9+5*(!(!(L)))+(!(!(AB))))*fac1+(4*(NX[0]+NX[1]+NX[2])+2*(NXG[0]+NXG[1]+NXG[2])+24)+2*4*7)*fac3;	/* static arrays (material parameters+axes+timing arrays) */
-memsrc         = (float)(nsrc_loc*(NT+7))*fac3;							/* sources */
-memseismograms = (float)(ntr_loc*(nseismograms*ns+5))*fac3;					/* seismograms */
+memsrc         = (float)(NSRC_LOC*(NT+7))*fac3;							/* sources */
+memseismograms = (float)(NTR_LOC*(nseismograms*ns+5))*fac3;					/* seismograms */
 membuffer      = (float)(12*(NX[0]*NX[1]+NX[1]*NX[2]+NX[2]*NX[0]))*fac3;			/* buffer arrays for exchange */
 mempml         = (float)(6*((1+NX[0]*NX[1])*(PML_TO*FWTO+PML_BO*FWBO)+(1+NX[1]*NX[2])*(PML_LE*FWLE+PML_RI*FWRI)+(1+NX[2]*NX[0])*(PML_BA*FWBA+PML_FR*FWFR)))*fac3;	/* PML arrays */
 memtotal       = memdyn+memmodel+memsrc+memseismograms+membuffer+mempml;
@@ -402,39 +406,39 @@ if (OUT_DIV_CURL){
 
 
 /* memory allocation for seismogram arrays */
-if (SEISMO && (ntr_loc>0)){
+if (SEISMO && (NTR_LOC>0)){
 
 	if (SEISMO & 16){
 		/* stress components */
-		seis.sectiontxx = matrix(1,ntr_loc,1,ns);
-		seis.sectiontxy = matrix(1,ntr_loc,1,ns);
-		seis.sectiontxz = matrix(1,ntr_loc,1,ns);
-		seis.sectiontyy = matrix(1,ntr_loc,1,ns);
-		seis.sectiontyz = matrix(1,ntr_loc,1,ns);
-		seis.sectiontzz = matrix(1,ntr_loc,1,ns);
+		seis.sectiontxx = matrix(1,NTR_LOC,1,ns);
+		seis.sectiontxy = matrix(1,NTR_LOC,1,ns);
+		seis.sectiontxz = matrix(1,NTR_LOC,1,ns);
+		seis.sectiontyy = matrix(1,NTR_LOC,1,ns);
+		seis.sectiontyz = matrix(1,NTR_LOC,1,ns);
+		seis.sectiontzz = matrix(1,NTR_LOC,1,ns);
 	}
 	if (SEISMO & 8){
 		/* particle acceleration */
-		seis.sectionax = matrix(1,ntr_loc,1,ns);
-		seis.sectionay = matrix(1,ntr_loc,1,ns);
-		seis.sectionaz = matrix(1,ntr_loc,1,ns);
+		seis.sectionax = matrix(1,NTR_LOC,1,ns);
+		seis.sectionay = matrix(1,NTR_LOC,1,ns);
+		seis.sectionaz = matrix(1,NTR_LOC,1,ns);
 	}
 	if (SEISMO & 4){
 		/* div and curl */
-		seis.sectioncurlx = matrix(1,ntr_loc,1,ns);
-		seis.sectioncurly = matrix(1,ntr_loc,1,ns);
-		seis.sectioncurlz = matrix(1,ntr_loc,1,ns);
-		seis.sectiondiv   = matrix(1,ntr_loc,1,ns);
+		seis.sectioncurlx = matrix(1,NTR_LOC,1,ns);
+		seis.sectioncurly = matrix(1,NTR_LOC,1,ns);
+		seis.sectioncurlz = matrix(1,NTR_LOC,1,ns);
+		seis.sectiondiv   = matrix(1,NTR_LOC,1,ns);
 	}
 	if (SEISMO & 2){
 		/* pressure */
-		seis.sectionp = matrix(1,ntr_loc,1,ns);
+		seis.sectionp = matrix(1,NTR_LOC,1,ns);
 	}
 	if (SEISMO & 1){
 		/* particle velocities */     
-		seis.sectionvx = matrix(1,ntr_loc,1,ns);
-		seis.sectionvy = matrix(1,ntr_loc,1,ns);
-		seis.sectionvz = matrix(1,ntr_loc,1,ns);
+		seis.sectionvx = matrix(1,NTR_LOC,1,ns);
+		seis.sectionvy = matrix(1,NTR_LOC,1,ns);
+		seis.sectionvz = matrix(1,NTR_LOC,1,ns);
 	}
 }
 
@@ -442,15 +446,15 @@ fprintf(FP," ... memory allocation for PE %d was successfull.\n\n", MYID);
 
 
 /* calculate wavelet for each source point */
-if (nsrc_loc) acq.signals = wavelet(acq.srcpos_loc, nsrc_loc);
+if (NSRC_LOC) acq.signals = wavelet(acq.srcpos_loc);
 
 
 /* output source signal e.g. for cross-correlation or comparison with analytical solutions */
-if ((SRCSIGNAL<6)&&(nsrc_loc)){
+if ((SRCSIGNAL<6)&&(NSRC_LOC)){
 	char  source_signal_file[STRING_SIZE];
 	sprintf(source_signal_file,"%s_source_signal.%d.su", MFILE, MYID);
 	fprintf(stdout,"\n PE %d outputs source time function in SU format to %s \n ", MYID, source_signal_file);
-	output_source_signal(fopen(source_signal_file,"w"), acq.signals, acq.srcpos_loc, nsrc_loc, NT, 1, geom.xg, geom.yg, geom.zg, geom.xpg, geom.ypg, geom.zpg);
+	output_source_signal(fopen(source_signal_file,"w"), acq.signals, acq.srcpos_loc, NT, 1, geom.xg, geom.yg, geom.zg, geom.xpg, geom.ypg, geom.zpg);
 }
 
 
@@ -576,7 +580,7 @@ for (nt=1;nt<=NT;nt++){
 					geom.dx, geom.dxp, geom.dy, geom.dyp, geom.dz, geom.dzp, infoout);
 			
 	/* apply body force source */
-	fsource(nt,wave.v,mat.rhoijpkp,mat.rhoipjkp,mat.rhoipjpk,acq.srcpos_loc,acq.signals,nsrc_loc,geom.dx,geom.dy,geom.dz,geom.dxp,geom.dyp,geom.dzp);
+	fsource(nt,wave.v,mat.rhoijpkp,mat.rhoipjkp,mat.rhoipjpk,acq.srcpos_loc,acq.signals,NSRC_LOC,geom.dx,geom.dy,geom.dz,geom.dxp,geom.dyp,geom.dzp);
 
 	/* exchange of particle velocities between PEs */
 	times.time_update[3] = exchange_v(wave.v, 
@@ -606,7 +610,7 @@ for (nt=1;nt<=NT;nt++){
 					geom.dx, geom.dxp, geom.dy, geom.dyp, geom.dz, geom.dzp, infoout);
 
 	/* apply explosive source */
-	psource(nt,wave.t,acq.srcpos_loc,acq.signals,nsrc_loc,geom.dx,geom.dy,geom.dz,geom.dxp,geom.dyp,geom.dzp);
+	psource(nt,wave.t,acq.srcpos_loc,acq.signals,NSRC_LOC,geom.dx,geom.dy,geom.dz,geom.dxp,geom.dyp,geom.dzp);
 
 	/* stress exchange between PEs */
 	times.time_update[6] = exchange_s(wave.t, 
@@ -619,8 +623,8 @@ for (nt=1;nt<=NT;nt++){
 
 
 	/* store amplitudes at receivers in section-arrays */
-	if ((SEISMO) && (nt==lsamp) && (nt<NT) && (ntr_loc>0)){
-		seismo(lsamp, ntr_loc, acq.recpos_loc, 
+	if ((SEISMO) && (nt==lsamp) && (nt<NT) && (NTR_LOC>0)){
+		seismo(lsamp, NTR_LOC, acq.recpos_loc, 
 			seis.sectionvx, seis.sectionvy, seis.sectionvz, seis.sectionax, seis.sectionay, seis.sectionaz, 
 			seis.sectiondiv, seis.sectioncurlx, seis.sectioncurly, seis.sectioncurlz, seis.sectionp,
 			seis.sectiontxx, seis.sectiontxy, seis.sectiontxz, seis.sectiontyy, seis.sectiontyz, seis.sectiontzz, 
@@ -652,7 +656,7 @@ if (SEISMO){
        saveseis(FP,seis.sectionvx,seis.sectionvy,seis.sectionvz,seis.sectionax,seis.sectionay,seis.sectionaz,
 		seis.sectiondiv,seis.sectioncurlx,seis.sectioncurly,seis.sectioncurlz,seis.sectionp,
 		seis.sectiontxx,seis.sectiontxy,seis.sectiontxz,seis.sectiontyy,seis.sectiontyz,seis.sectiontzz,
-                seis.section_fulldata,acq.recpos,acq.recpos_loc,ntr,acq.srcpos,nsrc,ns,geom.xg,geom.yg,geom.zg,
+                seis.section_fulldata,acq.recpos,acq.recpos_loc,acq.srcpos,NSRC,ns,geom.xg,geom.yg,geom.zg,
                 geom.xpg,geom.ypg,geom.zpg,acq.recswitch);
 }
 
@@ -844,59 +848,59 @@ if (OUT_DIV_CURL){
 	free_divcurl3d_tensor(wave.w,1,NX[0],1,NX[1],1,NX[2]);
 }
 
-if (SEISMO && (ntr_loc>0)){
+if (SEISMO && (NTR_LOC>0)){
 
-	free_imatrix(acq.recpos_loc,1,ntr,1,7);
+	free_imatrix(acq.recpos_loc,1,NTR,1,7);
 
 	if (SEISMO & 16){
 		/* stress components */
-		free_matrix(seis.sectiontxx,1,ntr_loc,1,ns);
-		free_matrix(seis.sectiontxy,1,ntr_loc,1,ns);
-		free_matrix(seis.sectiontxz,1,ntr_loc,1,ns);
-		free_matrix(seis.sectiontyy,1,ntr_loc,1,ns);
-		free_matrix(seis.sectiontyz,1,ntr_loc,1,ns);
-		free_matrix(seis.sectiontzz,1,ntr_loc,1,ns);
+		free_matrix(seis.sectiontxx,1,NTR_LOC,1,ns);
+		free_matrix(seis.sectiontxy,1,NTR_LOC,1,ns);
+		free_matrix(seis.sectiontxz,1,NTR_LOC,1,ns);
+		free_matrix(seis.sectiontyy,1,NTR_LOC,1,ns);
+		free_matrix(seis.sectiontyz,1,NTR_LOC,1,ns);
+		free_matrix(seis.sectiontzz,1,NTR_LOC,1,ns);
 	}
 	if (SEISMO & 8){
 		/* particle acceleration */
-		free_matrix(seis.sectionax,1,ntr_loc,1,ns);
-		free_matrix(seis.sectionay,1,ntr_loc,1,ns);
-		free_matrix(seis.sectionaz,1,ntr_loc,1,ns);
+		free_matrix(seis.sectionax,1,NTR_LOC,1,ns);
+		free_matrix(seis.sectionay,1,NTR_LOC,1,ns);
+		free_matrix(seis.sectionaz,1,NTR_LOC,1,ns);
 	}
 	if (SEISMO & 4){
 		/* div and curl */
-		free_matrix(seis.sectioncurlx,1,ntr_loc,1,ns);
-		free_matrix(seis.sectioncurly,1,ntr_loc,1,ns);
-		free_matrix(seis.sectioncurlz,1,ntr_loc,1,ns);
-		free_matrix(seis.sectiondiv,  1,ntr_loc,1,ns);
+		free_matrix(seis.sectioncurlx,1,NTR_LOC,1,ns);
+		free_matrix(seis.sectioncurly,1,NTR_LOC,1,ns);
+		free_matrix(seis.sectioncurlz,1,NTR_LOC,1,ns);
+		free_matrix(seis.sectiondiv,  1,NTR_LOC,1,ns);
 	}
 	if (SEISMO & 2){
 		/* pressure */
-		free_matrix(seis.sectionp,1,ntr_loc,1,ns);
+		free_matrix(seis.sectionp,1,NTR_LOC,1,ns);
 	}
 	if (SEISMO & 1){
 		/* particle velocities */
-		free_matrix(seis.sectionvx,1,ntr_loc,1,ns);
-		free_matrix(seis.sectionvy,1,ntr_loc,1,ns);
-		free_matrix(seis.sectionvz,1,ntr_loc,1,ns);
+		free_matrix(seis.sectionvx,1,NTR_LOC,1,ns);
+		free_matrix(seis.sectionvy,1,NTR_LOC,1,ns);
+		free_matrix(seis.sectionvz,1,NTR_LOC,1,ns);
 	}
 }
 
 /* free memory for local source positions and source signals */
-if (nsrc_loc){
-	free_matrix(acq.signals,   1,nsrc_loc,1,NT);
-	free_matrix(acq.srcpos_loc,1,nsrc_loc,1,9);
+if (NSRC_LOC){
+	free_matrix(acq.signals,   1,NSRC_LOC,1,NT);
+	free_matrix(acq.srcpos_loc,1,NSRC_LOC,1,9);
 }
 
 /* free memory for section_fulldata, recswitch and global receiver positions */
 if(SEISMO){
-   free_matrix(seis.section_fulldata,1,ntr,1,ns);
-   free_ivector(acq.recswitch,1,ntr);
-   free_imatrix(acq.recpos,1,ntr,1,7);
+   free_matrix(seis.section_fulldata,1,NTR,1,ns);
+   free_ivector(acq.recswitch,1,NTR);
+   free_imatrix(acq.recpos,1,NTR,1,7);
 }
 	
 /* free memory for global source positions */
-free_matrix(acq.srcpos,1,nsrc,1,8);
+free_matrix(acq.srcpos,1,NSRC,1,8);
 
 fprintf(FP," Deallocation of memory finished \n\n");
 

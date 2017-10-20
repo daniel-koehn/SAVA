@@ -28,6 +28,10 @@ float * x, float * y, float * z, float * xp, float * yp, float * zp,
 float * dx, float *dxp, float * dy, float *dyp, float * dz, float * dzp,
 float *** pi, float *** rhoijpkp, float *** rhoipjkp, float *** rhoipjpk);
 
+/*void forward_shot_AC(struct wave *wave, struct pmls *pmls, struct mat *mat, struct geom *geom, struct mpi *mpi, 
+                     struct seis *seis, struct acq *acq, struct times *times, int nsrc, int nsrc_loc, int ns, int ntr, 
+		     int ntr_loc);*/
+
 void info(FILE *fp);
 
 void model(float *** rho, float *** pi, float *** taup, float * eta, float * x, float * y, float * z);
@@ -58,12 +62,12 @@ void readmod(float *** rho, float *** pi, float *** taup, float * eta);
 
 void saveseis(FILE *fp, float **sectionvx, float **sectionvy, float **sectionvz, float **sectionp, 
 float **sectionax, float **sectionay, float **sectionaz, float **sectiondiv, float **section_fulldata, 
-int  **recpos, int  **recpos_loc, int ntr_loc, float ** srcpos, int nsrc, int ns, float *xg, float *yg, 
+int  **recpos, int  **recpos_loc, float ** srcpos, int nsrc, int ns, float *xg, float *yg, 
 float *zg, float *xpg, float *ypg, float *zpg, int *recswitch);
 
 void savesnap(FILE *fp, float * xpg, float * ypg, float * zpg);
 
-void seismo(int lsamp, int ntr_loc, int **recpos_loc, 
+void seismo(int lsamp, int **recpos_loc, 
 float **sectionvx, float **sectionvy, float **sectionvz, float **sectionp, 
 float **sectionax, float **sectionay, float **sectionaz, float **sectiondiv, 
 struct vector3d ***v, float ***p, struct vector3d ***a, float ***diverg);
@@ -72,7 +76,7 @@ void snap(FILE *fp,int nt, int nsnap, struct vector3d ***v, float ***p, struct v
 
 void snapmerge(int nsnap);
 
-float **sources(int *nsrc, float *xg, float *yg, float *zg, float *xpg, float *ypg, float *zpg);
+float **sources(float *xg, float *yg, float *zg, float *xpg, float *ypg, float *zpg);
 
 double update_s_ac(int nx1, int nx2, int ny1, int ny2, int nz1, int nz2,
 struct vector3d ***v, float *** p, float *** diverg,

@@ -7,10 +7,10 @@
 
 #include "fd.h"
 
-float **sources(int *nsrc, float *xg, float *yg, float *zg, float *xpg, float *ypg, float *zpg){
+float **sources(float *xg, float *yg, float *zg, float *xpg, float *ypg, float *zpg){
 
 	/* extern variables */
-	extern int	NXG[3];
+	extern int	NXG[3], NSRC;
 	extern float	TS;
 	extern float	REFSRC[3];
 	extern char	SRC_FILE[STRING_SIZE];
@@ -33,17 +33,17 @@ float **sources(int *nsrc, float *xg, float *yg, float *zg, float *xpg, float *y
 
 		if (fpsrc==NULL) 
 			error(" Source file could not be opened !");
-		*nsrc=0;
+		NSRC=0;
 
 		/* read number of source positions */
-		fscanf(fpsrc,"%d",nsrc);
-		fprintf(FP," Number of source positions found: %d \n",*nsrc);
+		fscanf(fpsrc,"%d",&NSRC);
+		fprintf(FP," Number of source positions found: %d \n",NSRC);
 
 		iposx  = ivector(1,2);
 		iposy  = ivector(1,2);
 		iposz  = ivector(1,2);
-		srcpos = matrix(1,*nsrc,1,8);
-		for (l=1;l<=*nsrc;l++){
+		srcpos = matrix(1,NSRC,1,8);
+		for (l=1;l<=NSRC;l++){
 			fscanf(fpsrc,"%f%f%f%f%f%f%f%f",&xsrc, &ysrc, &zsrc, &tshift, &fc, &amp, &type, &nsamp);
 
 			xsrc += REFSRC[0];
@@ -104,7 +104,7 @@ float **sources(int *nsrc, float *xg, float *yg, float *zg, float *xpg, float *y
 		fclose(fpsrc);
 
 		/* Compute maximum frequency */
-		for (l=1;l<=*nsrc;l++)
+		for (l=1;l<=NSRC;l++)
 			if (srcpos[l][5]>fc)
 				fc = srcpos[l][5];
 		fprintf(FP," Maximum frequency defined in %s: %6.2e Hz\n",SRC_FILE,fc);
@@ -112,16 +112,16 @@ float **sources(int *nsrc, float *xg, float *yg, float *zg, float *xpg, float *y
 	}
 
 	MPI_Barrier(MPI_COMM_WORLD);
-	MPI_Bcast(nsrc,1,MPI_INT,0,MPI_COMM_WORLD);
+	MPI_Bcast(&NSRC,1,MPI_INT,0,MPI_COMM_WORLD);
 	MPI_Bcast(&TS,1,MPI_FLOAT,0,MPI_COMM_WORLD);
 
 	if (MYID)
-		srcpos = matrix(1,*nsrc,1,8);
-	MPI_Bcast(&srcpos[1][1],(*nsrc)*8,MPI_FLOAT,0,MPI_COMM_WORLD);
+		srcpos = matrix(1,NSRC,1,8);
+	MPI_Bcast(&srcpos[1][1],NSRC*8,MPI_FLOAT,0,MPI_COMM_WORLD);
 
 	if (!(MYID)){
 		fprintf(FP," x \t\t y \t\t z \t\t tshift \t\t fc \t\t amp \t\t type \t\t nsamp\n");
-		for (l=1;l<=*nsrc;l++){
+		for (l=1;l<=NSRC;l++){
 			switch ((int)type){
 				case 1: /* explosion source (xp,yp,zp) */
 					xsrc = xpg[(int)srcpos[l][1]];

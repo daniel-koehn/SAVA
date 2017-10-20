@@ -6,14 +6,14 @@
 
 #include "fd.h"
 
-int **receiver(FILE *fp, int *ntr, float *xg, float *yg, float *zg, float *xpg, float *ypg, float *zpg){
+int **receiver(FILE *fp, float *xg, float *yg, float *zg, float *xpg, float *ypg, float *zpg){
 
 	/* extern variables */
 	extern int	NXG[3];
 	extern char	REC_FILE[STRING_SIZE];
 	extern float	REFREC[3], XREC1[3], XREC2[3];
 	extern int	READREC, DXREC[3];
-	extern int	MYID;
+	extern int	MYID, NTR;
 
 	/* local variables */
 	float	xrec, yrec, zrec;
@@ -32,14 +32,14 @@ int **receiver(FILE *fp, int *ntr, float *xg, float *yg, float *zg, float *xpg, 
 			if (fprec==NULL)
 				error(" Receiver file could not be opened !");
 
-			*ntr = 0;
+			NTR = 0;
 			while ((c=fgetc(fprec)) != EOF)
 				if (c=='\n') 
-					++(*ntr);
+					++(NTR);
 			rewind(fprec);
      
-			recpos = imatrix(1,*ntr,1,7);
-			for (itr=1;itr<=*ntr;itr++){
+			recpos = imatrix(1,NTR,1,7);
+			for (itr=1;itr<=NTR;itr++){
 				fscanf(fprec,"%f%f%f\n",&xrec, &yrec, &zrec);
 
 				xrec += REFREC[0];
@@ -80,16 +80,16 @@ int **receiver(FILE *fp, int *ntr, float *xg, float *yg, float *zg, float *xpg, 
 			iposz2 = irnd_to_grid(zrec,zg,zpg,NXG[2]);
 
 			/* number of receiver positions*/
-			*ntr = 0;
+			NTR = 0;
 			for (i=iposx1[2];i<=iposx2[2];i+=DXREC[0]){
 				for (j=iposy1[2];j<=iposy2[2];j+=DXREC[1]){
 					for (k=iposz1[2];k<=iposz2[2];k+=DXREC[2]){
-						++(*ntr);
+						++(NTR);
 					}
 				}
 			}
 
-			recpos = imatrix(1,*ntr,1,7);
+			recpos = imatrix(1,NTR,1,7);
 			itr = 0;
 			for (i=iposx1[2];i<=iposx2[2];i+=DXREC[0]){
 				for (j=iposy1[2];j<=iposy2[2];j+=DXREC[1]){
@@ -118,16 +118,16 @@ int **receiver(FILE *fp, int *ntr, float *xg, float *yg, float *zg, float *xpg, 
 	/* send global receiver positions to all CPUs*/
 	MPI_Barrier(MPI_COMM_WORLD);
 
-	MPI_Bcast(ntr,1,MPI_INT,0,MPI_COMM_WORLD);
+	MPI_Bcast(&NTR,1,MPI_INT,0,MPI_COMM_WORLD);
 	if (MYID)
-		recpos = imatrix(1,*ntr,1,7);
-	MPI_Bcast(&recpos[1][1],(*ntr)*7,MPI_INT,0,MPI_COMM_WORLD);
+		recpos = imatrix(1,NTR,1,7);
+	MPI_Bcast(&recpos[1][1],NTR*7,MPI_INT,0,MPI_COMM_WORLD);
 
 	if (!(MYID)){
-		fprintf(fp," Number of receiver positions found: %i\n",*ntr);
+		fprintf(fp," Number of receiver positions found: %i\n",NTR);
 		fprintf(fp," Receiver positions (in gridpoints) in the global model-system:\n");
 		fprintf(fp," x	\ty	\tz	\txp	\typ	\tzp \n");
-		for (itr=1;itr<=*ntr;itr++)
+		for (itr=1;itr<=NTR;itr++)
 			fprintf(fp,"%f\t%f\t%f\t%f\t%f\t%f\n",xg[recpos[itr][1]],yg[recpos[itr][2]],zg[recpos[itr][3]],xpg[recpos[itr][4]],ypg[recpos[itr][5]],zpg[recpos[itr][6]]);
 		fprintf(fp,"\n\n");
 	}

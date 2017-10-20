@@ -8,12 +8,12 @@
 #include "fd.h"
 #include "segy.h"
 
-void  output_source_signal(FILE *fp, float **signals, float **srcpos_loc, int nsrc_loc, int ns, int seis_form, float *xg, float *yg, float *zg, float *xpg, float *ypg, float *zpg){
+void  output_source_signal(FILE *fp, float **signals, float **srcpos_loc, int ns, int seis_form, float *xg, float *yg, float *zg, float *xpg, float *ypg, float *zpg){
 
 	/* extern variables */
 	extern float	DT;
 	extern int	NX[3], POS[3];
-	extern int	NDT;
+	extern int	NDT, NSRC_LOC;
 	extern int	FFID;
 
 	/* local variables */
@@ -26,7 +26,7 @@ void  output_source_signal(FILE *fp, float **signals, float **srcpos_loc, int ns
 
 	switch(seis_form){
 	case 1 :	/*SEGY (without file-header)*/
-		for(tracl=1;tracl<=nsrc_loc;tracl++){
+		for(tracl=1;tracl<=NSRC_LOC;tracl++){
 			i = POS[0]*NX[0] + srcpos_loc[tracl][1];
 			j = POS[1]*NX[1] + srcpos_loc[tracl][2];
 			k = POS[2]*NX[2] + srcpos_loc[tracl][3];
@@ -224,13 +224,13 @@ void  output_source_signal(FILE *fp, float **signals, float **srcpos_loc, int ns
 		}
 		break;
 	case 2 :	/*ASCII ONE COLUMN*/
-		for(i=1;i<=nsrc_loc;i++){
+		for(i=1;i<=NSRC_LOC;i++){
 			for(j=1;j<=ns;j+=NDT) 
 				fprintf(fp,"%e\n", signals[i][j]);
 		}
 		break;
 	case 3 :	/*BINARY */
-		for(i=1;i<=nsrc_loc;i++)
+		for(i=1;i<=NSRC_LOC;i++)
 			for(j=1;j<=ns;j+=NDT){
 				fwrite(&signals[i][j],sizeof(float),1,fp);
 			}

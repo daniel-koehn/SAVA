@@ -8,11 +8,11 @@
 #include "segy.h"
 
 
-void  outseis(FILE *fp, FILE *fpdata, float **section,int **recpos, int **recpos_loc, int ntr_loc, float ** srcpos, int nsrc, int ns, int seis_form, 
+void  outseis(FILE *fp, FILE *fpdata, float **section,int **recpos, int **recpos_loc, float ** srcpos, int nsrc, int ns, int seis_form, 
 		float *xg, float *yg, float *zg){
 
 	/* extern variables */
-	extern int	NDT;
+	extern int	NDT, NTR;
 	extern int	NX[3], POS[3];
 	extern float	DT;
 	extern int	FFID;
@@ -36,7 +36,7 @@ void  outseis(FILE *fp, FILE *fpdata, float **section,int **recpos, int **recpos
 
 	switch(seis_form){
 	case 1 :	/* SEGY (without file-header) */
-		for(tracl=1;tracl<=ntr_loc;tracl++){
+		for(tracl=1;tracl<=NTR;tracl++){
 			xr = xg[POS[0]*NX[0] + recpos[tracl][1]];
 			yr = yg[POS[1]*NX[1] + recpos[tracl][2]];
 			zr = zg[POS[2]*NX[2] + recpos[tracl][3]];
@@ -189,13 +189,13 @@ void  outseis(FILE *fp, FILE *fpdata, float **section,int **recpos, int **recpos
 		}
 		break;
 	case 2 :	/*ASCII ONE COLUMN*/
-		for(i=1;i<=ntr_loc;i++){
+		for(i=1;i<=NTR;i++){
 			for(j=1;j<=ns;j++) 
 				fprintf(fpdata,"%e\n", section[i][j]);
 		}
 		break;
 	case 3 :	/*BINARY */
-		fwrite(&section[1][1],sizeof(float),ns*ntr_loc,fpdata);
+		fwrite(&section[1][1],sizeof(float),ns*NTR,fpdata);
 		break;
 	default :
 		fprintf(fp," Don't know data format for seismograms !\n");

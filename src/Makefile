@@ -19,16 +19,16 @@ EXEC= ../bin
 # IFLAGS=-I./../libcseife -I$//sfs/fs2/work-sh2/sungw331/fftw-3.3.4/include -I./../include
 
 # On Linux NEC-cluster with Intel-MPI
-CC=mpiicc
-LFLAGS=-lm -ftz -lstdc++
-CFLAGS=-O3 -xAVX -ipo -fno-fnalias -restrict
-IFLAGS=-I./../include
+#CC=mpiicc
+#LFLAGS=-lm -ftz -lstdc++
+#CFLAGS=-O3 -xAVX -ipo -fno-fnalias -restrict
+#IFLAGS=-I./../include
 
 # On Desktop computer with LinuxMint 17, OpenMPI and gcc 4.8.2
-#CC=mpicc
-#LFLAGS=-lm -lstdc++
-#CFLAGS=-O3 -w -fno-stack-protector -D_FORTIFY_SOURCE=0
-#IFLAGS=-I./../include
+CC=mpicc
+LFLAGS=-lm -lstdc++
+CFLAGS=-O3 -w -fno-stack-protector -D_FORTIFY_SOURCE=0
+IFLAGS=-I./../include
 
 # after this line, no further editing should be necessary
 # --------------------------------------------------------
@@ -132,6 +132,7 @@ SAVA_AC_SRC= \
 	exchange_s_2nd_p.c \
 	exchange_v_2nd_p.c \
 	fd_coeff_p.c \
+	forward_shot_AC.c \
 	info_p.c \
 	pml_update_s_ac_p.c \
 	pml_update_v_p.c \

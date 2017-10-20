@@ -6,10 +6,10 @@
  
  #include "fd.h"
  
-float **splitsrc(int *nsrc_loc, float **srcpos, int nsrc){
+float **splitsrc(float **srcpos){
 
 	/* extern variables */
-	extern int	NX[3], POS[3], MYID;
+	extern int	NX[3], POS[3], MYID, NSRC, NSRC_LOC;
 	extern FILE	*FP;
 
 	/* local variables */
@@ -20,11 +20,11 @@ float **splitsrc(int *nsrc_loc, float **srcpos, int nsrc){
 
 
 	fprintf(FP,"\n **Message from splitsrc (printed by PE %d):\n",MYID);
-	srcpos_dummy = matrix(1,nsrc,1,2);
+	srcpos_dummy = matrix(1,NSRC,1,2);
 
 	i   = 0;
 	sum = 0.0;
-	for (j=1;j<=nsrc;j++) {
+	for (j=1;j<=NSRC;j++) {
 		a = (srcpos[j][1]-1)/NX[0];
 		b = (srcpos[j][2]-1)/NX[1];
 		c = (srcpos[j][3]-1)/NX[2];
@@ -54,7 +54,7 @@ float **splitsrc(int *nsrc_loc, float **srcpos, int nsrc){
 		srcpos_local[k][9] = sum;
 	}
 
-	free_matrix(srcpos_dummy,1,nsrc,1,2);
+	free_matrix(srcpos_dummy,1,NSRC,1,2);
 
 	fprintf(FP," Splitting of source positions from global to local grids finished.\n");
 	fprintf(FP," Number of local source positions: %d \n",i);
@@ -68,7 +68,7 @@ float **splitsrc(int *nsrc_loc, float **srcpos, int nsrc){
 			srcpos_local[j][5],srcpos_local[j][6],srcpos_local[j][7],srcpos_local[j][8]);
 	fprintf(FP,"\n");
 
-	*nsrc_loc = i;
+	NSRC_LOC = i;
 
 	return srcpos_local;
 }

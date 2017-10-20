@@ -9,10 +9,10 @@
 #include "fd.h"
 #include "fd3d.h"
 
-float ** wavelet(float ** srcpos_loc, int nsrc_loc){
+float ** wavelet(float ** srcpos_loc){
 
 	/* extern variables */
-	extern int	SRCSIGNAL, NT, MYID;
+	extern int	SRCSIGNAL, NT, MYID, NSRC_LOC;
 	extern float	DT;
 	extern FILE	*FP;
 
@@ -23,11 +23,11 @@ float ** wavelet(float ** srcpos_loc, int nsrc_loc){
 
 
 	if (SRCSIGNAL>=4) 
-		source = read_wavelet(srcpos_loc, nsrc_loc,&nsamp);
+		source = read_wavelet(srcpos_loc, NSRC_LOC,&nsamp);
 
-	signals = matrix(1,nsrc_loc,1,NT);
+	signals = matrix(1,NSRC_LOC,1,NT);
 
-	for (k=1;k<=nsrc_loc;k++) {
+	for (k=1;k<=NSRC_LOC;k++) {
 		tshift = srcpos_loc[k][4];
 		fc     = srcpos_loc[k][5];
 		a      = srcpos_loc[k][6];
@@ -77,11 +77,11 @@ float ** wavelet(float ** srcpos_loc, int nsrc_loc){
 		}
 	}
 	fprintf(FP," Message from function wavelet written by PE %d \n",MYID);
-	fprintf(FP," %d source positions located in subdomain of PE %d \n",nsrc_loc,MYID);
+	fprintf(FP," %d source positions located in subdomain of PE %d \n",NSRC_LOC,MYID);
 	fprintf(FP," have been assigned with a source signal. \n");
 	
 	if (SRCSIGNAL>=4)
-		free_matrix(source,1,nsrc_loc,1,nsamp);
+		free_matrix(source,1,NSRC_LOC,1,nsamp);
 
 
 	return signals;

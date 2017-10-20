@@ -43,7 +43,7 @@ float * dx, float * dy, float * dz, float * dxp, float * dyp, float * dzp);
 void saveseis(FILE *fp, float **sectionvx, float **sectionvy, float **sectionvz, float **sectionax, float **sectionay, float **sectionaz, 
 float **sectiondiv, float **sectioncurlx, float **sectioncurly, float **sectioncurlz, float **sectionp,
 float **sectiontxx, float **sectiontxy, float **sectiontxz, float **sectiontyy, float **sectiontyz, float **sectiontzz, float **section_fulldata,
-int  **recpos, int  **recpos_loc, int ntr, float ** srcpos, int nsrc, int ns, float *xg, float *yg, float *zg, float *xpg, float *ypg, float *zpg, 
+int  **recpos, int  **recpos_loc, float ** srcpos, int nsrc, int ns, float *xg, float *yg, float *zg, float *xpg, float *ypg, float *zpg, 
 int *recswitch);
 
 void savesnap(FILE *fp, float * xpg, float * ypg, float * zpg);
@@ -59,7 +59,7 @@ float *x, float *y, float *z);
 
 void snapmerge(int nsnap);
 
-float **sources(int *nsrc, float *xg, float *yg, float *zg, float *xpg, float *ypg, float *zpg);
+float **sources(float *xg, float *yg, float *zg, float *xpg, float *ypg, float *zpg);
 
 double update_v(int nx1, int nx2, int ny1, int ny2, int nz1, int nz2,
 struct vector3d ***v, struct tensor3d ***t, struct vector3d ***a, float *** rhoijpkp, float *** rhoipjkp, float *** rhoipjpk,

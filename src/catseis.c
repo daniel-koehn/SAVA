@@ -8,20 +8,20 @@
 
 #include "fd.h"
 
-void	catseis(float **data, float **fulldata, int *recswitch, int ntr_glob, int ns) {
+void	catseis(float **data, float **fulldata, int *recswitch, int ns) {
 
-	extern int      MYID;
+	extern int      MYID, NTR;
 	int		i, j, k;
 	float		**fulldata2;
 
 	/* temporary global data array for MPI-exchange */
-	fulldata2 = matrix(1,ntr_glob,1,ns);
+	fulldata2 = matrix(1,NTR,1,ns);
 
 	k = 0;	/* trace counter for local data array */
 
 	/* loop over global traces: copy traces of local array	*/
 	/* to appropriate locations in the global array		*/
-	for(i=1;i<=ntr_glob;i++)
+	for(i=1;i<=NTR;i++)
 	{
 		
 		if (recswitch[i]) {
@@ -30,7 +30,7 @@ void	catseis(float **data, float **fulldata, int *recswitch, int ntr_glob, int n
 		}
 	}
 
-	MPI_Allreduce(&fulldata2[1][1], &fulldata[1][1], ntr_glob*ns, MPI_FLOAT, MPI_SUM, MPI_COMM_WORLD);
+	MPI_Allreduce(&fulldata2[1][1], &fulldata[1][1], NTR*ns, MPI_FLOAT, MPI_SUM, MPI_COMM_WORLD);
 
-	free_matrix(fulldata2, 1,ntr_glob,1,ns);
+	free_matrix(fulldata2, 1,NTR,1,ns);
 }

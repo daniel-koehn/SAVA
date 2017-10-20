@@ -109,10 +109,10 @@ struct acq{
    float   **srcpos, **srcpos_loc;
    int     **recpos, **recpos_loc;
    int     *recswitch;
-} acq;
+}acq;
 
 /* declaration of functions */
-void	catseis(float **data, float **fulldata, int *recswitch, int ntr_glob, int ns);
+void	catseis(float **data, float **fulldata, int *recswitch, int ns);
 void	copydsk_array(FILE *fp_out, FILE *fp_in, int na, int format);
 void	note(FILE *fp);
 float	readdsk(FILE *fp_in, int format);

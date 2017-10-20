@@ -7,20 +7,20 @@
 
 #include "fd.h"
 
-void seismo(int lsamp, int ntr_loc, int **recpos_loc, 
+void seismo(int lsamp, int **recpos_loc, 
 float **sectionvx, float **sectionvy, float **sectionvz, float **sectionp, 
 float **sectionax, float **sectionay, float ** sectionaz, float **sectiondiv, 
 struct vector3d ***v, float ***p, struct vector3d ***a, float ***diverg){
 
 	/* extern variables */
-	extern int	NDT, SEISMO;
+	extern int	NDT, SEISMO, NTR_LOC;
 
 	/* local variables */
 	int	itr, ins, nxrec, nyrec, nzrec;
 
 
 	ins = lsamp/NDT;
-	for (itr=1;itr<=ntr_loc;itr++){
+	for (itr=1;itr<=NTR_LOC;itr++){
 		nxrec = recpos_loc[itr][1];
 		nyrec = recpos_loc[itr][2];
 		nzrec = recpos_loc[itr][3];

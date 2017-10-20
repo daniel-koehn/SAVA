@@ -71,10 +71,13 @@ extern const int	TAG7,  TAG8,  TAG9,  TAG10, TAG11, TAG12;
 extern const int	TAG13, TAG14, TAG15, TAG16, TAG17, TAG18;
 extern MPI_Comm		COMM_CART;
 
+/* Acquisition geometry */
+extern int 		NTR, NTR_LOC, NSRC, NSRC_LOC;
+NTR = 0, NTR_LOC = 0, NSRC = 0, NSRC_LOC = 0;
+
 /* variables in FD_AC */
 int	ns, nseismograms=0, ndyn, nt, infoout;
 int	lsnap, nsnap=0, lsamp=0;
-int	ntr=0, ntr_loc=0, nsrc=0, nsrc_loc=0;
 
 float	memdyn, memmodel, memsrc, memseismograms, membuffer, mempml, memtotal;
 float	fac1, fac2, fac3;
@@ -95,7 +98,6 @@ MPI_Barrier(MPI_COMM_WORLD);
 NT    = iround(TIME/DT);	/* number of timesteps */
 ns    = iround(NT/NDT);		/* number of samples per trace */
 lsnap = iround(TSNAP1/DT);	/* first snapshot at this timestep */
-lsamp = NDT;
 
 
 /* output of parameters to log-file or stdout */
@@ -175,16 +177,16 @@ read_grid(FP,DY_FILE,1,geom.y,geom.yp,geom.yg,geom.ypg);
 read_grid(FP,DZ_FILE,2,geom.z,geom.zp,geom.zg,geom.zpg);
 
 /* read source positions and source parameters from SOURCE_FILE and assign positions to local grids*/
-acq.srcpos     = sources(&nsrc, geom.xg, geom.yg, geom.zg, geom.xpg, geom.ypg, geom.zpg);
-acq.srcpos_loc = splitsrc(&nsrc_loc, acq.srcpos, nsrc);
+acq.srcpos     = sources(geom.xg, geom.yg, geom.zg, geom.xpg, geom.ypg, geom.zpg);
+acq.srcpos_loc = splitsrc(acq.srcpos);
 
 
 /* read receiver positions and assign positions to local grids */
 if (SEISMO){
-	acq.recpos      = receiver(FP, &ntr, geom.xg, geom.yg, geom.zg, geom.xpg, geom.ypg, geom.zpg);
-        acq.recswitch   = ivector(1,ntr);
-	acq.recpos_loc  = splitrec(&ntr_loc, acq.recpos, ntr, acq.recswitch);
-	seis.section_fulldata = matrix(1,ntr,1,ns);
+	acq.recpos      = receiver(FP, geom.xg, geom.yg, geom.zg, geom.xpg, geom.ypg, geom.zpg);
+        acq.recswitch   = ivector(1,NTR);
+	acq.recpos_loc  = splitrec(acq.recpos, acq.recswitch);
+	seis.section_fulldata = matrix(1,NTR,1,ns);
 }
 
 
@@ -245,8 +247,8 @@ fac3 = sizeof(float)*fac2;
 
 memdyn         = (float)(ndyn*fac1)*fac3;							/* dynamic arrays */
 memmodel       = (float)((5+(!(!(L)))+(!(!(AB))))*fac1+(4*(NX[0]+NX[1]+NX[2])+2*(NXG[0]+NXG[1]+NXG[2])+24)+2*4*7)*fac3;	/* static arrays (material parameters+axes+timing arrays) */
-memsrc         = (float)(nsrc_loc*(NT+7))*fac3;							/* sources */
-memseismograms = (float)(ntr_loc*(nseismograms*ns+5))*fac3;					/* seismograms */
+memsrc         = (float)(NSRC_LOC*(NT+7))*fac3;							/* sources */
+memseismograms = (float)(NTR_LOC*(nseismograms*ns+5))*fac3;					/* seismograms */
 membuffer      = (float)(4*(NX[0]*NX[1]+NX[1]*NX[2]+NX[0]*NX[2]))*fac3;				/* buffer arrays for exchange */
 mempml         = (float)(2*((3+NX[0]*NX[1])*(PML_TO*FWTO+PML_BO*FWBO)+(3+NX[1]*NX[2])*(PML_LE*FWLE+PML_RI*FWRI)+(3+NX[0]*NX[2])*(PML_BA*FWBA+PML_FR*FWFR)))*fac3;	/* PML arrays */
 memtotal       = memdyn+memmodel+memsrc+memseismograms+membuffer+mempml;
@@ -261,7 +263,6 @@ fprintf(FP," Static variables: \t\t %6.2f MB\n", memmodel);
 fprintf(FP," Sources: \t\t\t %6.2f MB\n", memsrc);
 fprintf(FP," Seismograms: \t\t\t %6.2f MB\n", memseismograms);
 fprintf(FP," Buffer arrays for grid exchange:%6.2f MB\n", membuffer);
-   /*fprintf(FP," Network Buffer for MPI_Bsend: \t %6.2f MB\n", membuff);*/
 if (PML){
 	fprintf(FP," PML variables: \t\t %6.2f MB\n", mempml);
 }
@@ -381,27 +382,27 @@ if (OUT_DIV_CURL){
 
 
 /* memory allocation for seismogram arrays */
-if (SEISMO && (ntr_loc>0)){      
+if (SEISMO && (NTR_LOC>0)){      
 
 	if (SEISMO & 8){
 		/* particle acceleration */
-		seis.sectionax = matrix(1,ntr_loc,1,ns);
-		seis.sectionay = matrix(1,ntr_loc,1,ns);
-		seis.sectionaz = matrix(1,ntr_loc,1,ns);
+		seis.sectionax = matrix(1,NTR_LOC,1,ns);
+		seis.sectionay = matrix(1,NTR_LOC,1,ns);
+		seis.sectionaz = matrix(1,NTR_LOC,1,ns);
 	}
 	if (SEISMO & 4){
 		/* div */
-		seis.sectiondiv = matrix(1,ntr_loc,1,ns);
+		seis.sectiondiv = matrix(1,NTR_LOC,1,ns);
 	}
 	if (SEISMO & 2){
 		/* pressure */
-		seis.sectionp = matrix(1,ntr_loc,1,ns);
+		seis.sectionp = matrix(1,NTR_LOC,1,ns);
 	}
 	if (SEISMO & 1){
 		/* particle velocities */     
-		seis.sectionvx = matrix(1,ntr_loc,1,ns);
-		seis.sectionvy = matrix(1,ntr_loc,1,ns);
-		seis.sectionvz = matrix(1,ntr_loc,1,ns);
+		seis.sectionvx = matrix(1,NTR_LOC,1,ns);
+		seis.sectionvy = matrix(1,NTR_LOC,1,ns);
+		seis.sectionvz = matrix(1,NTR_LOC,1,ns);
 	}
 }
 
@@ -409,15 +410,15 @@ fprintf(FP," ... memory allocation for PE %d was successful.\n\n", MYID);
 
 
 /* calculate wavelet for each source point */
-if (nsrc_loc) acq.signals = wavelet(acq.srcpos_loc, nsrc_loc);
+if (NSRC_LOC) acq.signals = wavelet(acq.srcpos_loc);
 
 
 /* output source signal e.g. for cross-correlation or comparison with analytical solutions */
-if ((SRCSIGNAL<6)&&(nsrc_loc)){
+if ((SRCSIGNAL<6)&&(NSRC_LOC)){
 	char  source_signal_file[STRING_SIZE];
 	sprintf(source_signal_file,"%s_source_signal.%d.su", MFILE, MYID);
 	fprintf(stdout,"\n PE %d outputs source time function in SU format to %s \n ", MYID, source_signal_file);
-	output_source_signal(fopen(source_signal_file,"w"), acq.signals, acq.srcpos_loc, nsrc_loc, NT, 1, geom.xg, geom.yg, geom.zg, geom.xpg, geom.ypg, geom.zpg);
+	output_source_signal(fopen(source_signal_file,"w"), acq.signals, acq.srcpos_loc, NT, 1, geom.xg, geom.yg, geom.zg, geom.xpg, geom.ypg, geom.zpg);
 }
 
 
@@ -483,116 +484,9 @@ MPI_Send_init(&mpi.sbuf_bot_to_top[1][1],NX[0]*NX[1],MPI_FLOAT,INDEX[5],TAG6,COM
 /* Synchronizing PEs before starting loop of time steps */
 MPI_Barrier(MPI_COMM_WORLD);
 
-times.time2=MPI_Wtime();
+/* Acoustic forward modelling */
 
-fprintf(FP,"\n\n\n *********** STARTING TIME STEPPING ***************\n");
-fprintf(FP," real time before starting time loop: %4.2f s.\n",times.time2-times.time1);
-
-
-/*----------------------  loop over timesteps  ------------------*/
-
-for (nt=1;nt<=NT;nt++){
-	infoout = !(nt%50);
-
-	/* timing */
-	times.time2 = MPI_Wtime();
-
-	if (infoout){
-		fprintf(FP,"\n Computing timestep %d of %d \n",nt,NT);
-	}
-	
-	/* Check if simulation is still stable */
-	if (isnan(wave.v[NX[0]/2][NX[1]/2][NX[2]/2].x)) error(" Simulation is unstable !");
-	
-	/* update of particle velocities */
-	times.time_update[1] = update_v(1, NX[0], 1, NX[1], 1, NX[2], wave.v, wave.p, wave.a, 
-					mat.rhoijpkp, mat.rhoipjkp, mat.rhoipjpk, pmls.absorb_coeff,
-					geom.dxp, geom.dyp, geom.dzp, infoout); 
-
-	if (PML) times.time_update[2] = pml_update_v(wave.v, wave.p, mat.rhoijpkp, mat.rhoipjkp, mat.rhoipjpk,
-					pmls.pmlle, pmls.pmlri, pmls.pmlba, pmls.pmlfr, pmls.pmlto, pmls.pmlbo, 
-					pmls.Pp_x_l, pmls.Pp_x_r, pmls.Pp_y_b, pmls.Pp_y_f, pmls.Pp_z_t, pmls.Pp_z_b,
-					geom.dxp, geom.dyp, geom.dzp, infoout);
-
-	/* apply body force source */
-	fsource(nt,wave.v,mat.rhoijpkp,mat.rhoipjkp,mat.rhoipjpk,acq.srcpos_loc,acq.signals,nsrc_loc,geom.dx,geom.dy,geom.dz,geom.dxp,geom.dyp,geom.dzp);
-
-	/* exchange of particle velocities between PEs */
-	times.time_update[3] = exchange_v(wave.v, 
-					mpi.sbuf_lef_to_rig, mpi.sbuf_bac_to_fro, mpi.sbuf_top_to_bot, 
-					mpi.rbuf_lef_to_rig, mpi.rbuf_bac_to_fro, mpi.rbuf_top_to_bot, 
-					mpi.request_v,
-					infoout);
-
-	/* update of stress tensor components */
-	if (L)  /* visco-acoustic simulation */
-		times.time_update[4] = update_s_va(1, NX[0], 1, NX[1], 1, NX[2], wave.v, wave.p, wave.rpp, wave.diverg,
-					mat.pi, mat.taup, mat.eta, 
-					pmls.absorb_coeff, 
-					geom.dx, geom.dy, geom.dz, infoout);
-	else  /* acoustic simulation (no visco-elasticity) */
-		times.time_update[4] = update_s_ac(1, NX[0], 1, NX[1], 1, NX[2], wave.v, wave.p, wave.diverg,
-					mat.pi, 
-					pmls.absorb_coeff,
-					geom.dx, geom.dy, geom.dz, infoout);
-
-	if (PML) times.time_update[5] = pml_update_s(wave.v, wave.p, mat.pi, 
-					pmls.pmlle, pmls.pmlri, pmls.pmlba, pmls.pmlfr, pmls.pmlto, pmls.pmlbo, 
-					pmls.Pvx_x_l, pmls.Pvx_x_r, pmls.Pvy_y_b, pmls.Pvy_y_f, pmls.Pvz_z_t, pmls.Pvz_z_b,
-					geom.dx, geom.dy, geom.dz, infoout);
-
-	/* apply explosive source */
-	psource(nt,wave.p,acq.srcpos_loc,acq.signals,nsrc_loc,geom.dx,geom.dy,geom.dz);
-
-	/* stress exchange between PEs */
-	times.time_update[6] = exchange_s(wave.p, 
-					mpi.sbuf_rig_to_lef, mpi.sbuf_fro_to_bac, mpi.sbuf_bot_to_top, 
-					mpi.rbuf_rig_to_lef, mpi.rbuf_fro_to_bac, mpi.rbuf_bot_to_top, 
-					mpi.request_s,
-					infoout);
-
-
-	/* store amplitudes at receivers in section-arrays */
-	if ((SEISMO) && (nt==lsamp) && (nt<NT) && (ntr_loc>0)){
-		seismo(lsamp, ntr_loc, acq.recpos_loc, 
-			seis.sectionvx, seis.sectionvy, seis.sectionvz, seis.sectionp, 
-			seis.sectionax, seis.sectionay, seis.sectionaz, seis.sectiondiv, 
-			wave.v, wave.p, wave.a, wave.diverg);
-		lsamp += NDT;
-	}
-
-	/* write snapshots to disk */
-	if ((SNAP) && (nt==lsnap) && (nt<=TSNAP2/DT)){
-		snap(FP, nt, ++nsnap, wave.v, wave.p, wave.a, wave.diverg, geom.xp, geom.yp, geom.zp);
-		lsnap += iround(TSNAPINC/DT);
-	}
-
-	/* timing */
-	times.time3          = MPI_Wtime();
-	times.time_update[7] = (times.time3-times.time2);
-	if (infoout)
-		fprintf(FP," Total real time for timestep %d : \t\t %4.2f s.\n",nt,times.time_update[7]);
-
-	/* update timing statistics */
-	update_timing(nt, times.time_update, times.time_sum, times.time_avg, times.time_std, 7);
-
-}
-/*-------------------- End of loop over timesteps ----------*/
-MPI_Barrier(MPI_COMM_WORLD);
-
-/* save seismograms */
-if (SEISMO){
-	saveseis(FP,seis.sectionvx,seis.sectionvy,seis.sectionvz,seis.sectionp,seis.sectionax,seis.sectionay,
-                 seis.sectionaz,seis.sectiondiv,seis.section_fulldata,acq.recpos,acq.recpos_loc,ntr,acq.srcpos,
-                 nsrc,ns,geom.xg,geom.yg,geom.zg,geom.xpg,geom.ypg,geom.zpg,acq.recswitch);
-}
-
-/* merge snapshots */
-if ((!(MYID))&&(SNAP)){
-	savesnap(FP, geom.xpg, geom.ypg, geom.zpg);
-}
-
-MPI_Barrier(MPI_COMM_WORLD);
+forward_shot_AC(&wave, &pmls, &mat, &geom, &mpi, &seis, &acq, &times, ns);
 
 /* output timing information (real times for update and exchange) */
 timing(times.time_avg, times.time_std, 1);
@@ -742,46 +636,46 @@ if (OUT_DIV_CURL){
 	free_f3tensor(wave.diverg,1,NX[0],1,NX[1],1,NX[2]);
 }
 
-if (SEISMO && (ntr_loc>0)){
-	free_imatrix(acq.recpos_loc,1,ntr,1,7);
+if (SEISMO && (NTR_LOC>0)){
+	free_imatrix(acq.recpos_loc,1,NTR,1,7);
 
 	if (SEISMO & 8){
 		/* particle acceleration */
-		free_matrix(seis.sectionax,1,ntr_loc,1,ns);
-		free_matrix(seis.sectionay,1,ntr_loc,1,ns);
-		free_matrix(seis.sectionaz,1,ntr_loc,1,ns);
+		free_matrix(seis.sectionax,1,NTR_LOC,1,ns);
+		free_matrix(seis.sectionay,1,NTR_LOC,1,ns);
+		free_matrix(seis.sectionaz,1,NTR_LOC,1,ns);
 	}
 	if (SEISMO & 4){
 		/* div */
-		free_matrix(seis.sectiondiv,1,ntr_loc,1,ns);
+		free_matrix(seis.sectiondiv,1,NTR_LOC,1,ns);
 	}
 	if (SEISMO & 2){
 		/* pressure */
-		free_matrix(seis.sectionp,1,ntr_loc,1,ns);
+		free_matrix(seis.sectionp,1,NTR_LOC,1,ns);
 	}
 	if (SEISMO & 1){
 		/* particle velocities */
-		free_matrix(seis.sectionvx,1,ntr_loc,1,ns);
-		free_matrix(seis.sectionvy,1,ntr_loc,1,ns);
-		free_matrix(seis.sectionvz,1,ntr_loc,1,ns);
+		free_matrix(seis.sectionvx,1,NTR_LOC,1,ns);
+		free_matrix(seis.sectionvy,1,NTR_LOC,1,ns);
+		free_matrix(seis.sectionvz,1,NTR_LOC,1,ns);
 	}
 }
 
 /* free memory for section_fulldata, recswitch and global receiver positions */
 if(SEISMO){
-   free_matrix(seis.section_fulldata,1,ntr,1,ns);
-   free_ivector(acq.recswitch,1,ntr);
-   free_imatrix(acq.recpos,1,ntr,1,7);
+   free_matrix(seis.section_fulldata,1,NTR,1,ns);
+   free_ivector(acq.recswitch,1,NTR);
+   free_imatrix(acq.recpos,1,NTR,1,7);
 }
 
 /* free memory for local source positions and source signals */
-if (nsrc_loc){
-	free_matrix(acq.signals,   1,nsrc_loc,1,NT);
-	free_matrix(acq.srcpos_loc,1,nsrc_loc,1,9);
+if (NSRC_LOC){
+	free_matrix(acq.signals,   1,NSRC_LOC,1,NT);
+	free_matrix(acq.srcpos_loc,1,NSRC_LOC,1,9);
 }
 
 /* free memory for global source positions */
-free_matrix(acq.srcpos,1,nsrc,1,8);
+free_matrix(acq.srcpos,1,NSRC,1,8);
 
 fprintf(FP," Deallocation of memory finished \n\n");
 

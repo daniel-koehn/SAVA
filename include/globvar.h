@@ -45,3 +45,6 @@ const int	TAG1 =1,  TAG2 =2,  TAG3 =3,  TAG4 =4,  TAG5 =5,  TAG6 =6;
 const int	TAG7 =7,  TAG8 =8,  TAG9 =9,  TAG10=10, TAG11=11, TAG12=12;
 const int	TAG13=13, TAG14=14, TAG15=15, TAG16=16, TAG17=17, TAG18=18;
 MPI_Comm	COMM_CART;
+
+/* Acquisition geometry */
+int NTR, NTR_LOC, NSRC, NSRC_LOC;
