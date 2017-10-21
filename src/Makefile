@@ -112,6 +112,7 @@ FD3D_ANISO_SRC= \
 
 SAVA_ISO_SRC= \
 	FD_ISO.c \
+	forward_shot_ISO.c \
 	checkfd_ps.c \
 	fd_coeff_ps.c \
 	info_ps.c \
@@ -157,6 +158,7 @@ SAVA_ORTHO_SRC= \
 	checkfd_ortho.c \
 	fd_coeff_ortho.c \
 	FD_ORTHO.c \
+	forward_shot_ORTHO.c \
 	info_ortho.c \
 	readmod_ortho.c \
 	timing_ortho.c \
@@ -173,6 +175,7 @@ SAVA_TRICL_SRC= \
 	exchange_e_2nd_tricl.c \
 	fd_coeff_tricl.c \
 	FD_TRICL.c \
+	forward_shot_TRICL.c \
 	info_tricl.c \
 	readmod_tricl.c \
 	timing_tricl.c \

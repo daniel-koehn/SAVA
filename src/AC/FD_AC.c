@@ -485,7 +485,6 @@ MPI_Send_init(&mpi.sbuf_bot_to_top[1][1],NX[0]*NX[1],MPI_FLOAT,INDEX[5],TAG6,COM
 MPI_Barrier(MPI_COMM_WORLD);
 
 /* Acoustic forward modelling */
-
 forward_shot_AC(&wave, &pmls, &mat, &geom, &mpi, &seis, &acq, &times, ns);
 
 /* output timing information (real times for update and exchange) */
