@@ -12,14 +12,22 @@ float * dx, float * dy, float * dz, float * dxp, float * dyp, float * dzp){
 
 	/* extern variables */
 	extern float	DT;
-	
+	extern int      SHOTNO_LOC, RUN_MULTIPLE_SHOTS;	
+
 	/* local variables */
-	int	i, j, k, l, type;
+	int	i, j, k, l, type, ishot1, ishot2;
 	float	amp;
 
+	ishot1 = 1;
+	ishot2 = nsrc_loc;
+
+	if(RUN_MULTIPLE_SHOTS && nsrc_loc){	
+	    ishot1 = SHOTNO_LOC;
+	    ishot2 = SHOTNO_LOC;
+	}
 
 	/* adding source wavelet to stress components at source points */
-	for (l=1;l<=nsrc_loc;l++) {
+	for (l=ishot1;l<=ishot2;l++) {
 		type = (int)srcpos_loc[l][7];
 		if ((type==1) || ((type>7) && (type<11))){
 			i   = (int)srcpos_loc[l][1];

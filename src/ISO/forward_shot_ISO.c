@@ -27,8 +27,8 @@ void forward_shot_ISO(struct wave *wave, struct pmls *pmls, struct mat *mat, str
 
 	(*times).time2 = MPI_Wtime();
 
-	fprintf(FP,"\n\n\n *********** STARTING TIME STEPPING ***************\n");
-	fprintf(FP," real time before starting time loop: %4.2f s.\n",(*times).time2-(*times).time1);
+	/*fprintf(FP,"\n\n\n *********** STARTING TIME STEPPING ***************\n");
+	fprintf(FP," real time before starting time loop: %4.2f s.\n",(*times).time2-(*times).time1);*/
 
 	lsamp = NDT;                    /* seismogram sampling rate */
 	lsnap = iround(TSNAP1/DT);	/* first snapshot at this timestep */
@@ -38,7 +38,7 @@ void forward_shot_ISO(struct wave *wave, struct pmls *pmls, struct mat *mat, str
 
 	for (nt=1;nt<=NT;nt++){
 
-		infoout = !(nt%50);
+		infoout = !(nt%1000);
 
 		/* timing */
 		(*times).time2 = MPI_Wtime();

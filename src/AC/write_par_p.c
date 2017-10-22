@@ -26,7 +26,7 @@ void write_par(FILE *fp){
 	extern char	SEIS_FILE[STRING_SIZE];
 	extern char	SIGNAL_FILE[STRING_SIZE];
 	extern char	MFILE[STRING_SIZE];
-	extern int	NP, NPROCX[3], MYID; 
+	extern int	NP, NPROCX[3], MYID, RUN_MULTIPLE_SHOTS; 
 
 	/* local variables */
 	int	l;
@@ -55,6 +55,7 @@ void write_par(FILE *fp){
 	fprintf(fp," Number of timesteps: %i \n",NT);
 	fprintf(fp,"\n");
 	fprintf(fp," ------------------------- SOURCE -----------------------------\n");
+	fprintf(fp," RUN_MULTIPLE_SHOTS: %d \n",RUN_MULTIPLE_SHOTS);
 	fprintf(fp," reference point for source coordinate system:\n");
 	fprintf(fp," x=%f \ty=%f \tz=%f\n",REFSRC[0], REFSRC[1], REFSRC[2]);
 	fprintf(fp," reading source positions, time delay, centre frequency \n");

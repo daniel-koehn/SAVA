@@ -27,6 +27,9 @@ int infoout);
 
 void FD_ISO();
 
+/*void forward_ISO(struct wave *wave, struct pmls *pmls, struct mat *mat, struct geom *geom, struct mpi *mpi, 
+                 struct seis *seis, struct acq *acq, struct times *times, int ns);*/
+
 double pml_update_v(struct vector3d ***v, struct tensor3d ***t, float *** rhoijpkp, float *** rhoipjkp, float *** rhoipjpk, 
 struct pml *pmlle, struct pml *pmlri, 
 struct pml *pmlba, struct pml *pmlfr, 
@@ -39,6 +42,8 @@ float * dx, float * dxp, float * dy, float * dyp, float * dz, float * dzp, int i
 void psource(int nt, struct tensor3d ***t,
 float ** srcpos_loc, float ** signals, int nsrc_loc, 
 float * dx, float * dy, float * dz, float * dxp, float * dyp, float * dzp);
+
+/*void reset_wavefields_el(struct wave *wave, struct pmls *pmls, struct seis *seis, int ns);*/
 
 void saveseis(FILE *fp, float **sectionvx, float **sectionvy, float **sectionvz, float **sectionax, float **sectionay, float **sectionaz, 
 float **sectiondiv, float **sectioncurlx, float **sectioncurly, float **sectioncurlz, float **sectionp,

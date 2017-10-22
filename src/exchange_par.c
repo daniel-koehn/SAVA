@@ -31,7 +31,8 @@ void exchange_par(void){
 	extern char	MFILE[STRING_SIZE], MODEL_FILE[STRING_SIZE], SIGNAL_FILE[STRING_SIZE], LOG_FILE[STRING_SIZE];
 	extern char	SNAP_FILE[STRING_SIZE], SRC_FILE[STRING_SIZE], REC_FILE[STRING_SIZE];
 	extern char	SEIS_FILE[STRING_SIZE], CHECKPTFILE[STRING_SIZE];
-	extern int	NPROC, NPROCX[3], MYID, MODEL_IDX[3], IDX[3], CHECKPTREAD, CHECKPTWRITE; 
+	extern int	NPROC, NPROCX[3], MYID, MODEL_IDX[3], IDX[3], CHECKPTREAD, CHECKPTWRITE;
+	extern int      RUN_MULTIPLE_SHOTS;
 
 	/* local variables */
 	int	idum[NPAR];
@@ -124,6 +125,7 @@ void exchange_par(void){
 		idum[27] = FFID;
 		idum[28] = CHECKPTREAD;
 		idum[29] = CHECKPTWRITE;
+		idum[30] = RUN_MULTIPLE_SHOTS;
 	}
 
 	MPI_Barrier(MPI_COMM_WORLD);
@@ -218,6 +220,7 @@ void exchange_par(void){
 	FFID		= idum[27];
 	CHECKPTREAD	= idum[28];
 	CHECKPTWRITE	= idum[29];
+	RUN_MULTIPLE_SHOTS = idum[30];
 
 	if (MYID) 
 		FL = vector(1,L);

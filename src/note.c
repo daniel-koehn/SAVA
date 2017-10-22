@@ -11,7 +11,6 @@ void note(FILE *fp){
 	/* extern variables */
 	extern char	LOG_FILE[STRING_SIZE];
 	extern int	MYID, LOG;
-	extern int	FFID;
 	extern FILE	*FP;
 
 	/* local variables */
@@ -19,7 +18,7 @@ void note(FILE *fp){
 
 
 	/* open log-file (each PE is using different file) */
-	sprintf(ext,".%.4i.%i",FFID,MYID);  
+	sprintf(ext,".%i",MYID);  
 	strcat(LOG_FILE,ext);
 
 	if (!(MYID)){

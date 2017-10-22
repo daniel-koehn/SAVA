@@ -44,6 +44,8 @@ float **read_wavelet(float **srcpos_loc, int nsrc_loc, int *nsamp_max);
 
 int **receiver(FILE *fp, float *xg, float *yg, float *zg, float *xpg, float *ypg, float *zpg);
 
+void shotno_glob2loc(struct acq *acq);
+
 int **splitrec(int **recpos, int *recswitch);
 
 float **splitsrc(float **srcpos);

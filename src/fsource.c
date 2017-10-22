@@ -14,16 +14,24 @@ float * dx, float * dy, float * dz, float * dxp, float * dyp, float * dzp){
 
 	/* extern variables */
 	extern float	DT;
+	extern int      SHOTNO_LOC, RUN_MULTIPLE_SHOTS;
 
 	/* local variables */
-	int	i, j, k, l, type;
+	int	i, j, k, l, type, ishot1, ishot2;
 	float	amp;
 
 	/* adding source wavelet to the particle velocity components 
 	   (force source) at the source points */
 
+	ishot1 = 1;
+	ishot2 = nsrc;
 
-	for (l=1;l<=nsrc;l++) {
+	if(RUN_MULTIPLE_SHOTS && nsrc){	
+	    ishot1 = SHOTNO_LOC;
+	    ishot2 = SHOTNO_LOC;
+	}
+
+	for (l=ishot1;l<=ishot2;l++) {
 		type = (int)srcpos_loc[l][7];
 		if ((type>1) && (type<8)){
 			i   = (int)srcpos_loc[l][1];

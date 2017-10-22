@@ -28,7 +28,8 @@ reference_point_for_source_coordinate_system_(REFSRC) = 0.0 , 0.0 , 0.0
 (ricker=1;fumue=2;SIN**3=3;from_ASCII_FILE=4;from_BIN_FILE=5)_(SRCSIGNAL) = 1
 SIGNAL_FILE = ./model/signal.bin
 # shot coordinates, amplitude and center frequency are defined in:
-SOURCE_FILE = ./source/source.dat 
+SOURCE_FILE = ./source/source.dat
+run_multiple_shots_defined_in_SOURCE_FILE_(yes=1)_(RUN_MULTIPLE_SHOTS) = 1 
 #
 #--------------------- Model -------------------------------------
 read_model_parameters_from_MFILE(yes>0)(READMOD) = 0

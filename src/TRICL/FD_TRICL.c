@@ -761,12 +761,6 @@ free_vector(geom.wz1 ,1,NX[2]);
 free_vector(geom.wzp2,1,NX[2]);
 free_vector(geom.wz2 ,1,NX[2]);
 
-/* free timing arrays */
-free_dvector(times.time_update,1,9);
-free_dvector(times.time_sum,   1,9);
-free_dvector(times.time_avg,   1,9);
-free_dvector(times.time_std,   1,9);
-
 /* free stress arrays */
 free_tensor3d_tensor(wave.t,0,NX[0]+1,0,NX[1]+1,0,NX[2]+1);
 
@@ -998,6 +992,11 @@ fprintf(FP,"\n **Message from main (printed by PE %d): \n",MYID);
 times.time4 = MPI_Wtime();
 fprintf(FP," Total real time of program: %4.2f seconds.\n\n",times.time4-times.time1);
 
+/* free timing arrays */
+free_dvector(times.time_update,1,9);
+free_dvector(times.time_sum,   1,9);
+free_dvector(times.time_avg,   1,9);
+free_dvector(times.time_std,   1,9);
 
 fclose(FP);
 

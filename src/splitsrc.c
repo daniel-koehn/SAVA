@@ -51,7 +51,7 @@ float **splitsrc(float **srcpos){
 		srcpos_local[k][6] = srcpos[j][6];
 		srcpos_local[k][7] = srcpos[j][7];
 		srcpos_local[k][8] = srcpos[j][8];
-		srcpos_local[k][9] = sum;
+		srcpos_local[k][9] = j;
 	}
 
 	free_matrix(srcpos_dummy,1,NSRC,1,2);

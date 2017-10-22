@@ -29,6 +29,7 @@ reference_point_for_source_coordinate_system_(REFSRC) = 0.0 , 0.0 , 0.0
 SIGNAL_FILE = ./model/signal.bin
 # shot coordinates, amplitude and center frequency are defined in:
 SOURCE_FILE = ./source/source_aniso.dat 
+run_multiple_shots_defined_in_SOURCE_FILE_(yes=1)_(RUN_MULTIPLE_SHOTS) = 1
 #
 #--------------------- Model -------------------------------------
 read_model_parameters_from_MFILE(yes>0)(READMOD) = 0

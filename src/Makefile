@@ -84,6 +84,7 @@ FD3D_UTIL = \
 	read_par.c \
 	read_wavelet.c \
 	receiver.c \
+	shotno_glob2loc.c \
 	splitrec.c \
 	splitsrc.c \
 	wavelet.c \
@@ -98,6 +99,7 @@ FD3D_EL_SRC= \
 	exchange_v_2nd_el.c \
 	pml_update_v_el.c \
 	psource_el.c \
+	reset_wavefields_el.c \
 	saveseis_el.c \
 	savesnap_el.c \
 	snap_el.c \
@@ -112,6 +114,7 @@ FD3D_ANISO_SRC= \
 
 SAVA_ISO_SRC= \
 	FD_ISO.c \
+	forward_ISO.c \
 	forward_shot_ISO.c \
 	checkfd_ps.c \
 	fd_coeff_ps.c \
