@@ -26,6 +26,8 @@ void forward_shot_TRICL(struct wave *wave, struct pmls *pmls, struct mat *mat, s
         /* local variables */
 	int nt, infoout, lsamp, lsnap, nsnap=0;	
 
+	(*times).time2 = MPI_Wtime();
+
 	fprintf(FP,"\n\n\n *********** STARTING TIME STEPPING ***************\n");
 	fprintf(FP," real time before starting time loop: %4.2f s.\n",(*times).time2-(*times).time1);
 
@@ -36,7 +38,7 @@ void forward_shot_TRICL(struct wave *wave, struct pmls *pmls, struct mat *mat, s
 	/*----------------------  loop over timesteps  ------------------*/
 
 	for (nt=1;nt<=NT;nt++){
-		infoout = !(nt%50);
+		infoout = !(nt%1000);
 
 		/* timing */
 		(*times).time2 = MPI_Wtime();

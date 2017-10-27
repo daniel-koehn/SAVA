@@ -99,7 +99,6 @@ FD3D_EL_SRC= \
 	exchange_v_2nd_el.c \
 	pml_update_v_el.c \
 	psource_el.c \
-	reset_wavefields_el.c \
 	saveseis_el.c \
 	savesnap_el.c \
 	snap_el.c \
@@ -121,6 +120,7 @@ SAVA_ISO_SRC= \
 	info_ps.c \
 	pml_update_s_el_ps.c \
 	readmod_ps.c \
+	reset_wavefields_iso.c \
 	sava_ISO.c \
 	update_s_el_2nd_ps.c \
 	update_s_ve_2nd_ps.c \
@@ -161,9 +161,11 @@ SAVA_ORTHO_SRC= \
 	checkfd_ortho.c \
 	fd_coeff_ortho.c \
 	FD_ORTHO.c \
+	forward_ORTHO.c \
 	forward_shot_ORTHO.c \
 	info_ortho.c \
 	readmod_ortho.c \
+	reset_wavefields_ortho.c \
 	timing_ortho.c \
 	update_s_el_2nd_ortho.c \
 	write_par_ortho.c \
@@ -178,9 +180,11 @@ SAVA_TRICL_SRC= \
 	exchange_e_2nd_tricl.c \
 	fd_coeff_tricl.c \
 	FD_TRICL.c \
+	forward_TRICL.c \
 	forward_shot_TRICL.c \
 	info_tricl.c \
 	readmod_tricl.c \
+	reset_wavefields_tricl.c \
 	timing_tricl.c \
 	update_s_el_2nd_tricl.c \
 	write_par_tricl.c \

@@ -10,6 +10,7 @@
 #include "fd.h"
 #include "fd3d.h"	/* general include file for program FD3D */
 #include "fd3del.h"	/* include file for elastic version */
+#include "fd3dps.h"	/* include file for elastic version */
 #include "fd3diso.h"	/* include file for isotropic version */
 #include "ISO_struct.h"	/* data structures for isotropic elastic forward modelling */
 

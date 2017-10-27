@@ -188,10 +188,6 @@ read_grid(FP,DX_FILE,0,geom.x,geom.xp,geom.xg,geom.xpg);
 read_grid(FP,DY_FILE,1,geom.y,geom.yp,geom.yg,geom.ypg);
 read_grid(FP,DZ_FILE,2,geom.z,geom.zp,geom.zg,geom.zpg);
 
-/* read source positions and source parameters from SOURCE_FILE and assign positions to local grids */
-acq.srcpos     = sources(geom.xg, geom.yg, geom.zg, geom.xpg, geom.ypg, geom.zpg);
-acq.srcpos_loc = splitsrc(acq.srcpos);
-
 
 /* read receiver positions and assign positions to local grids */
 if (SEISMO){
@@ -675,9 +671,10 @@ MPI_Send_init(&mpi.sbuf_e_bot_to_top[1][1][1],4*NX[0]*NX[1],MPI_FLOAT,INDEX[5],T
 /* Synchronizing PEs before starting loop of time steps */
 MPI_Barrier(MPI_COMM_WORLD);
 
-
-/* anisotropic elastic forward modelling (triclinic medium) */
-forward_shot_TRICL(&wave, &pmls, &mat, &geom, &mpi, &seis, &acq, &times, ns);
+/* *************************************************************************
+*  Calculate 3D Forward Wavefield (triclinic medium) for all shots
+****************************************************************************/
+forward_TRICL(&wave,&pmls,&mat,&geom,&mpi,&seis,&acq,&times,ns);
 
 /* output timing information (real times for update and exchange) */
 timing(times.time_avg, times.time_std, 1);

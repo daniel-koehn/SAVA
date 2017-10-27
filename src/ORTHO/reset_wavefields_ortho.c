@@ -8,9 +8,9 @@
  *  -------------------------------------------*/
 
 #include "fd.h"
-#include "ISO_struct.h"	/* data structures for isotropic elastic forward modelling */
+#include "ORTHO_struct.h"	/* data structures for anisotropic elastic forward modelling (orthorhombic medium) */
 
-void reset_wavefields_el(struct wave *wave, struct pmls *pmls, struct seis *seis, int ns){
+void reset_wavefields_ortho(struct wave *wave, struct pmls *pmls, struct seis *seis, int ns){
 
         /* global variables */
 	extern int NX[3], L;

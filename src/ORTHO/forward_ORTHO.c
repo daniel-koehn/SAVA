@@ -1,19 +1,20 @@
-/*  -----------------------------------------------------
- *   Isotropic elastic forward modelling for all shots
+/*  -----------------------------------------------------------------------------
+ *   Anisotropic elastic forward modelling (orthorhombic medium) for all shots
  *
  *
  *   D. Koehn
- *   Kiel, 21.10.2017
+ *   Kiel, 25.10.2017
  *
- *  -----------------------------------------------------*/
+ *  -----------------------------------------------------------------------------*/
 
-#include "fd.h"
-#include "fd3d.h"	/* general include file for program FD3D */
-#include "fd3del.h"	/* include file for elastic version */
-#include "fd3diso.h"	/* include file for isotropic version */
-#include "ISO_struct.h"	/* data structures for isotropic elastic forward modelling */
+#include "fd.h"		    /* general include file for all FD programs */
+#include "fd3d.h"	    /* general include file for FD3D program */
+#include "fd3daniso.h"	    /* include file for anisotropic version */
+#include "fd3dortho.h"	    /* include file for orthotropic version */
+#include "fd3del.h"	    /* include file for elastic version */
+#include "ORTHO_struct.h"   /* data structures for ORTHO forward modelling */
 
-void forward_ISO(struct wave *wave, struct pmls *pmls, struct mat *mat, struct geom *geom, struct mpi *mpi, 
+void forward_ORTHO(struct wave *wave, struct pmls *pmls, struct mat *mat, struct geom *geom, struct mpi *mpi, 
                  struct seis *seis, struct acq *acq, struct times *times, int ns){
 
         /* global variables */
@@ -62,10 +63,10 @@ void forward_ISO(struct wave *wave, struct pmls *pmls, struct mat *mat, struct g
     		MPI_Barrier(MPI_COMM_WORLD);
 
 		/* reset wavefields before shot modelling */
-		reset_wavefields_iso(wave, pmls, seis, ns);
+		reset_wavefields_ortho(wave, pmls, seis, ns);
 
-    		/* Isotropic elastic forward modelling */
-    		forward_shot_ISO(wave, pmls, mat, geom, mpi, seis, acq, times, ns);
+    		/* anisotropic elastic forward modelling (orthorhombic medium) */
+    		forward_shot_ORTHO(wave, pmls, mat, geom, mpi, seis, acq, times, ns);
 
 	} /* end of loop over shots */
 

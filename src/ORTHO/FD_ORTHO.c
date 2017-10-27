@@ -76,6 +76,7 @@ extern MPI_Comm		COMM_CART;
 extern int 		NTR, NTR_LOC, NSRC, NSRC_LOC;
 NTR = 0, NTR_LOC = 0, NSRC = 0, NSRC_LOC = 0;
 
+
 /* variables in FD_ORTHO */
 int	ns, nseismograms=0, ndyn, nt, infoout;
 int	lsnap, nsnap=0, lsamp=0;
@@ -174,11 +175,6 @@ geom.dzp  = vector(1,NX[2]);
 read_grid(FP,DX_FILE,0,geom.x,geom.xp,geom.xg,geom.xpg);
 read_grid(FP,DY_FILE,1,geom.y,geom.yp,geom.yg,geom.ypg);
 read_grid(FP,DZ_FILE,2,geom.z,geom.zp,geom.zg,geom.zpg);
-
-/* read source positions and source parameters from SOURCE_FILE and assign positions to local grids */
-acq.srcpos     = sources(geom.xg, geom.yg, geom.zg, geom.xpg, geom.ypg, geom.zpg);
-acq.srcpos_loc = splitsrc(acq.srcpos);
-
 
 /* read receiver positions and assign positions to local grids */
 if (SEISMO){
@@ -449,24 +445,7 @@ if (SEISMO && (NTR_LOC>0)){
 	}
 }
 
-fprintf(FP," ... memory allocation for PE %d was successfull.\n\n", MYID);
-
-
-/* calculate wavelet for each source point */
-if (NSRC_LOC) acq.signals = wavelet(acq.srcpos_loc);
-
-
-/* output source signal e.g. for cross-correlation or comparison with analytical solutions */
-if ((SRCSIGNAL<6)&&(NSRC_LOC)){
-	char  source_signal_file[STRING_SIZE];
-	sprintf(source_signal_file,"%s_source_signal.%d.su", MFILE, MYID);
-	fprintf(stdout,"\n PE %d outputs source time function in SU format to %s \n ", MYID, source_signal_file);
-	output_source_signal(fopen(source_signal_file,"w"), acq.signals, acq.srcpos_loc, NT, 1, geom.xg, geom.yg, geom.zg, geom.xpg, geom.ypg, geom.zpg);
-}
-
-
-MPI_Barrier(MPI_COMM_WORLD);
-
+fprintf(FP," ... memory allocation for PE %d was successful.\n\n", MYID);
 
 /* create model grids */
 if (READMOD)
@@ -567,8 +546,10 @@ MPI_Send_init(&mpi.sbuf_s_bot_to_top[1][1],     NX[0]*NX[1],MPI_FLOAT,INDEX[5],T
 /* Synchronizing PEs before starting loop of time steps */
 MPI_Barrier(MPI_COMM_WORLD);
 
-/* anisotropic elastic forward modelling (orthorhombic medium) */
-forward_shot_ORTHO(&wave, &pmls, &mat, &geom, &mpi, &seis, &acq, &times, ns);
+/* *************************************************************************
+*  Calculate 3D Forward Wavefield (orthorhombic medium) for all shots
+****************************************************************************/
+forward_ORTHO(&wave,&pmls,&mat,&geom,&mpi,&seis,&acq,&times,ns);
 
 /* output timing information (real times for update and exchange) */
 timing(times.time_avg, times.time_std, 1);
