@@ -67,11 +67,12 @@ extern FILE	*FP;
 
 /* Mpi-variables */
 extern int		NP, NPROC, NPROCX[3], MYID;
-extern int		POS[3], INDEX[6];
+extern int		POS[3], INDEX[6], NPROCSHOT;
+extern int 		COLOR, NSHOT1, NSHOT2, MYID_SHOT;
 extern const int	TAG1,  TAG2,  TAG3,  TAG4,  TAG5,  TAG6;
 extern const int	TAG7,  TAG8,  TAG9,  TAG10, TAG11, TAG12;
 extern const int	TAG13, TAG14, TAG15, TAG16, TAG17, TAG18;
-extern MPI_Comm		COMM_CART;
+extern MPI_Comm		COMM_CART, SHOT_COMM;
 
 /* Acquisition geometry */
 extern int 		NTR, NTR_LOC, NSRC, NSRC_LOC;
@@ -90,7 +91,18 @@ times.time1 = MPI_Wtime();
 /* open log-file (each PE is using different file) and print info */
 note(stdout);
 
-/* domain decomposition */
+/* split MPI communicator for shot parallelization */
+COLOR = MYID / (NPROCX[0] * NPROCX[1] * NPROCX[2]);
+MPI_Comm_split(MPI_COMM_WORLD, COLOR, MYID, &SHOT_COMM); 
+
+/* esimtate communicator size for SHOT_COMM and number of colors (NPROCSHOT) */
+MPI_Comm_rank(SHOT_COMM, &MYID_SHOT);
+NPROCSHOT = NP / (NPROCX[0] * NPROCX[1] * NPROCX[2]);
+
+/* Initiate MPI shot parallelization */
+init_MPIshot();
+
+/* MPI domain decomposition */
 initproc();
 
 MPI_Barrier(MPI_COMM_WORLD);
@@ -775,5 +787,8 @@ free_dvector(times.time_avg,   1,7);
 free_dvector(times.time_std,   1,7);
 
 fclose(FP);
+
+/* free SHOT_COMM */
+MPI_Comm_free(&SHOT_COMM);
 
 }

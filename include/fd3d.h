@@ -11,12 +11,16 @@ void av_mat(float *** u, float *** ua, int cc, char t, float * x, float * xp, fl
 
 void check_par(void);
 
+void countsrc(void);
+
 void exchange_par(void);
 
 void fsource(int nt, struct vector3d ***v, 
 float *** rhoijpkp, float *** rhoipjkp, float *** rhoipjpk,
 float ** srcpos_loc, float ** signals, int nsrc, 
 float * dx, float * dy, float * dz, float * dxp, float * dyp, float * dzp);
+
+void init_MPIshot();
 
 void initproc(void);
 

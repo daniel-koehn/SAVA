@@ -12,7 +12,7 @@ float **sectionax, float **sectionay, float **sectionaz, float **sectiondiv, flo
 int  **recpos, int  **recpos_loc, float ** srcpos, int nsrc, int ns, float *xg, float *yg, float *zg, float *xpg, float *ypg, float *zpg, int *recswitch){
 
 	/* extern variables */
-	extern int	SEISMO, SEIS_FORMAT, MYID;
+	extern int	SEISMO, SEIS_FORMAT, MYID, MYID_SHOT;
 	extern int	FFID, NTR;
 	extern char	SEIS_FILE[STRING_SIZE];
 
@@ -41,21 +41,21 @@ int  **recpos, int  **recpos_loc, float ** srcpos, int nsrc, int ns, float *xg, 
 	if (SEISMO & 8){
 		/* particle acceleration */                
 		catseis(sectionax, section_fulldata, recswitch, ns);
-		if(!MYID){		   
+		if(!MYID_SHOT){		   
 		   sprintf(seisfile,"%s%.4i_ax%s",SEIS_FILE,FFID,ext);
 		   fprintf(fp,"\t %s \n",seisfile);
 		   outseis(fp,fopen(seisfile,"w"),section_fulldata,recpos,recpos_loc,srcpos,nsrc,ns,SEIS_FORMAT,xg,ypg,zpg);
 		}
 
                 catseis(sectionay, section_fulldata, recswitch, ns);
-		if(!MYID){
+		if(!MYID_SHOT){
 		   sprintf(seisfile,"%s%.4i_ay%s",SEIS_FILE,FFID,ext);
 		   fprintf(fp,"\t %s \n",seisfile);
 		   outseis(fp,fopen(seisfile,"w"),section_fulldata,recpos,recpos_loc,srcpos,nsrc,ns,SEIS_FORMAT,xpg,yg,zpg);
                 }
 
                 catseis(sectionaz, section_fulldata, recswitch, ns);
-		if(!MYID){
+		if(!MYID_SHOT){
 		   sprintf(seisfile,"%s%.4i_az%s",SEIS_FILE,FFID,ext);
 		   fprintf(fp,"\t %s \n\n",seisfile);
 		   outseis(fp,fopen(seisfile,"w"),section_fulldata,recpos,recpos_loc,srcpos,nsrc,ns,SEIS_FORMAT,xpg,ypg,zg);
@@ -65,7 +65,7 @@ int  **recpos, int  **recpos_loc, float ** srcpos, int nsrc, int ns, float *xg, 
 	if (SEISMO & 4){
 		/* div */
 	        catseis(sectiondiv, section_fulldata, recswitch, ns);	        
-		if(!MYID){
+		if(!MYID_SHOT){
 		   sprintf(seisfile,"%s%.4i_div%s",SEIS_FILE,FFID,ext);
 		   fprintf(fp,"\t %s \n\n",seisfile);
 		   outseis(fp,fopen(seisfile,"w"),section_fulldata,recpos,recpos_loc,srcpos,nsrc,ns,SEIS_FORMAT,xpg,ypg,zpg);
@@ -74,7 +74,7 @@ int  **recpos, int  **recpos_loc, float ** srcpos, int nsrc, int ns, float *xg, 
 	if (SEISMO & 2){
 		/* pressure */
                 catseis(sectionp, section_fulldata, recswitch, ns);
-		if(!MYID){
+		if(!MYID_SHOT){
 		   sprintf(seisfile,"%s%.4i_p%s",SEIS_FILE,FFID,ext);
 		   fprintf(fp,"\t %s \n\n",seisfile);
 		   outseis(fp,fopen(seisfile,"w"),section_fulldata,recpos,recpos_loc,srcpos,nsrc,ns,SEIS_FORMAT,xpg,ypg,zpg);
@@ -83,21 +83,21 @@ int  **recpos, int  **recpos_loc, float ** srcpos, int nsrc, int ns, float *xg, 
 	if (SEISMO & 1){
 		/* particle velocity */ 
                 catseis(sectionvx, section_fulldata, recswitch, ns);
-		if(!MYID){
+		if(!MYID_SHOT){
  		   sprintf(seisfile,"%s%.4i_vx%s",SEIS_FILE,FFID,ext);
 		   fprintf(fp,"\t %s \n",seisfile);
 		   outseis(fp,fopen(seisfile,"w"),section_fulldata,recpos,recpos_loc,srcpos,nsrc,ns,SEIS_FORMAT,xg,ypg,zpg);
 		}
 
                 catseis(sectionvy, section_fulldata, recswitch, ns);
-		if(!MYID){
+		if(!MYID_SHOT){
 		   sprintf(seisfile,"%s%.4i_vy%s",SEIS_FILE,FFID,ext);
 		   fprintf(fp,"\t %s \n",seisfile);
 		   outseis(fp,fopen(seisfile,"w"),section_fulldata,recpos,recpos_loc,srcpos,nsrc,ns,SEIS_FORMAT,xpg,yg,zpg);
 		}
 
                 catseis(sectionvz, section_fulldata, recswitch, ns);
-		if(!MYID){
+		if(!MYID_SHOT){
 		   sprintf(seisfile,"%s%.4i_vz%s",SEIS_FILE,FFID,ext);
 		   fprintf(fp,"\t %s \n\n",seisfile);
 		   outseis(fp,fopen(seisfile,"w"),section_fulldata,recpos,recpos_loc,srcpos,nsrc,ns,SEIS_FORMAT,xpg,ypg,zg);

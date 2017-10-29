@@ -72,8 +72,10 @@ FD3D_UTIL = \
 	absorb.c \
 	av_mat.c \
 	check_par.c \
+	countsrc.c \
 	exchange_par.c \
 	fsource.c \
+	init_MPIshot.c \
 	initproc_cart.c \
 	matcopy.c \
 	merge.c \

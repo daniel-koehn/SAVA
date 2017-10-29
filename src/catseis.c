@@ -10,7 +10,9 @@
 
 void	catseis(float **data, float **fulldata, int *recswitch, int ns) {
 
-	extern int      MYID, NTR;
+	extern int         MYID, NTR;
+        extern MPI_Comm	   SHOT_COMM;
+
 	int		i, j, k;
 	float		**fulldata2;
 
@@ -30,7 +32,7 @@ void	catseis(float **data, float **fulldata, int *recswitch, int ns) {
 		}
 	}
 
-	MPI_Allreduce(&fulldata2[1][1], &fulldata[1][1], NTR*ns, MPI_FLOAT, MPI_SUM, MPI_COMM_WORLD);
+	MPI_Allreduce(&fulldata2[1][1], &fulldata[1][1], NTR*ns, MPI_FLOAT, MPI_SUM, SHOT_COMM);
 
 	free_matrix(fulldata2, 1,NTR,1,ns);
 }

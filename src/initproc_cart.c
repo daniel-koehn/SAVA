@@ -14,21 +14,21 @@ void initproc(void){
 	/* extern variables */
 	extern int	NXG[3];
 	extern int	NX[3], POS[3], INDEX[6];
-	extern int	NP, NPROC, NPROCX[3], MYID;
+	extern int	NP, NPROC, NPROCSHOT, NPROCX[3], MYID;
 	extern int	PERIODIC[3];
 	extern FILE	*FP;
-	extern MPI_Comm	COMM_CART;
+	extern MPI_Comm	COMM_CART, SHOT_COMM;
 	
 	/* local variables */
 	const int	opt = 1;	/* allow for optimization (1...yes, 0...no) */
 	int	   	MYID_CART;
 
 
-	if (NPROC != NP)
+	if (NPROC * NPROCSHOT != NP)
 		error("Number of processors specified in the parameter file \n and at command line (NP) differ !");
 
 	/* create communicator for Cartesian topology */
-	MPI_Cart_create(MPI_COMM_WORLD,3,NPROCX,PERIODIC,opt,&COMM_CART);
+	MPI_Cart_create(SHOT_COMM,3,NPROCX,PERIODIC,opt,&COMM_CART);
 
 	/* new proc-ID in Cartesian grid */
 	MPI_Comm_rank(COMM_CART,&MYID_CART);
