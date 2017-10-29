@@ -19,6 +19,7 @@ void forward_TRICL(struct wave *wave, struct pmls *pmls, struct mat *mat, struct
 
         /* global variables */
 	extern int RUN_MULTIPLE_SHOTS, NSRC, SHOTNO, SHOTNO_LOC, SRCSIGNAL, MYID, NT;
+	extern int NSHOT1, NSHOT2;
 	extern char MFILE[STRING_SIZE];
 	extern FILE *FP;
 
@@ -34,8 +35,8 @@ void forward_TRICL(struct wave *wave, struct pmls *pmls, struct mat *mat, struct
 	ishot1 = 1;
 	ishot2 = nshots;
 
-	/* loop over shots */
-	for (ishot=ishot1;ishot<=ishot2;ishot++){
+	/* loop over shots */	
+	for (ishot=NSHOT1;ishot<NSHOT2;ishot++){
 
     		SHOTNO = ishot;
 		shotno_glob2loc(acq);
