@@ -5,7 +5,7 @@ The forward modelling code is based on fd3d by Olaf Hellwig.
 
 Manual available at:
 
-http://www.geophysik.uni-kiel.de/~dkoehn/software.htm
+https://danielkoehnsite.wordpress.com/software/
 
 SAVA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, version 3.0 of the License only.
 
