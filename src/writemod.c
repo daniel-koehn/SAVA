@@ -40,7 +40,7 @@ void writemod(char modfile[STRING_SIZE], float *** array, int format){
 		for (j=1;j<=NX[1];j+=MODEL_IDX[1]){
 			for (k=1;k<=NX[2];k+=MODEL_IDX[2]){
 				l++;
-				array1[k] = array[i][j][k];
+				array1[l] = array[i][j][k];
 			}
 		}
 	}
