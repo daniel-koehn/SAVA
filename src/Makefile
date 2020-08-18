@@ -15,8 +15,8 @@ EXEC= ../bin
 # CC=mpiicc
 # LFLAGS=-lm -lcseife -lfftw3 -ftz -lstdc++
 # CFLAGS=-O3 -xAVX -ipo -fno-fnalias -restrict
-# SFLAGS=-L./../libcseife -L$//sfs/fs2/work-sh2/sungw331/fftw-3.3.4/lib
-# IFLAGS=-I./../libcseife -I$//sfs/fs2/work-sh2/sungw331/fftw-3.3.4/include -I./../include
+# IFLAGS=-I./../include
+
 
 # On Linux NEC-cluster with Intel-MPI
 #CC=mpiicc
